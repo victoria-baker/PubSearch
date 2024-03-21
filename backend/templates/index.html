@@ -6,16 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PubSearch</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" defer></script>
+  <link rel="icon" type="image/jpg" sizes="32x32" href="/static/images/pubsearchfavi.jpeg">
 </head>
 
-<body class="bg-black flex flex-col items-center justify-center h-screen">
+<body>
 
-  <!-- Logo -->
+  <!-- Logo
   <div class="absolute top-0 left-0 p-6">
     <img src="assets/images/logo.png" alt="Company logo" class="h-12">
-  </div>
+  </div> -->
 
   <!-- Welcome Text -->
   <h1 id="welcomeText" class="welcome-text">
@@ -33,7 +34,7 @@
   <!-- Results -->
   <div id="results" class="results mt-4 text-white"></div>
 
-  <script src="js/searchbar.js"></script>
+  <script src="{{ url_for('static', filename='searchbar.js') }}"></script>
 
 </body>
 

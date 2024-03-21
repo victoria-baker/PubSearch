@@ -1,3 +1,13 @@
+body {
+  background-color: #c6c9cd; /* Soft black */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+
 .search-bar {
     padding-left: 2.5rem;
     padding-right: 2.5rem;
@@ -6,7 +16,7 @@
     padding-bottom: 0.5rem;
     border-radius: 9999px;
     width: 24rem;
-    background-image: linear-gradient(to right, #FFA500, #FF4500);
+    background-image: linear-gradient(to right, #a6a8ac, #a6a8ac); */
     border: none;
     outline: none;
     color: black;
@@ -37,14 +47,16 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    color: white;
+    color: #08639b;
     /*Change the color if needed! */
     z-index: 10;
   }
   
   .welcome-text {
-    color: white;
+    background: -webkit-linear-gradient(#72b2da, #08639b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     text-align: center;
-    font-size: 2.25rem;
+    font-size: 3.25rem;
     margin-bottom: 1.5rem;
   }
