@@ -24,7 +24,7 @@
 
   <!-- Search Bar -->
   <div class="relative">
-    <input type="text" id="searchInput" class="search-bar" placeholder="What would you like to search today?">
+    <input type="text" id="searchInput" class="search-bar" placeholder="What would you like to search today?" onkeydown="keySearch(event)">
     <button onclick="search()" class="search-btn">
       <i class="fas fa-arrow-right"></i>
     </button>
@@ -33,7 +33,7 @@
   <!-- Results -->
   <div id="results" class="results mt-4 text-white"></div>
 
-  <script src="js/script.js"></script>
+  <script src="js/searchbar.js"></script>
 
 </body>
 
