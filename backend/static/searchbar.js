@@ -11,7 +11,7 @@ function search() {
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/send-data', true);
   xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.onreadystatechange = function() {
+  xhr.onreadystatechange = function () {
     if (xhr.readyState == 4 && xhr.status == 200) {
       var results = JSON.parse(xhr.responseText);
       displayResults(results);
@@ -24,10 +24,13 @@ function displayResults(data) {
   // Clear previous search results
   document.getElementById('results').innerHTML = '';
   // Display each result
-  data.forEach(function(result, index) {
+  console.log("This is a message!");
+  //alert("This is a message!");
+  data.forEach(function (result, index) {
     var resultDiv = document.createElement('div');
-    resultDiv.className = 'result-item'; 
-    resultDiv.innerHTML = '<h2>' + index + '. ' + result.title + '</h2><p>' + result.link + '</p>';
+    resultDiv.className = 'result-item';
+    //resultDiv.innerHTML = '<h2>' + index + '. ' + result.title + '</h2><p>' + result.link + '</p>';
+    resultDiv.innerHTML = '<h2>' + (index + 1) + '. ' + result + '</h2>';
     document.getElementById('results').appendChild(resultDiv);
   });
 }
