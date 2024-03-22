@@ -13,10 +13,10 @@ app = Flask(__name__)
 @app.route('/send-data', methods=['POST'])
 def receive_data():
     # Get data from the request
-    data = request.json
+    data = request.get_json()
 
-    # Process the data (here we'll just echo it back)
-    processed_data = {'received_data': data}
+    print("DATA",data)
+    #search(data)
 
     # Return a response
     return jsonify(processed_data)
@@ -39,7 +39,7 @@ def search(words):
 	dflist = []
 
 	resultdf = pd.DataFrame([item.toDict() for item in results])
-	resultdf = resultdf[resultdf.abstract.notna()]
+	#resultdf = resultdf[resultdf.abstract.notna()]
 
 	dflist.append(resultdf)
 	df = pd.concat(dflist)
@@ -88,3 +88,6 @@ def search(words):
 	results = []
 	for a in range(len(sorted_array)):
 		results.append((sorted_array[a][1]+" "+sorted_array[a][2]))
+		#results.append({'result': sorted_array[a][1] + " " + sorted_array[a][2]})
+
+	return results
