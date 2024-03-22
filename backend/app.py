@@ -1,9 +1,10 @@
 import json
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import pandas as pd
+from jaccardsim import search as jaccard_search
 
 # ROOT_PATH for linking with all your files. 
 # Feel free to use a config.py or settings.py with a global export variable
@@ -36,6 +37,14 @@ def json_search(query):
 @app.route("/")
 def home():
     return render_template('index.html',title="sample html")
+
+@app.route('/send-data', methods=['POST'])
+def receive_data():
+    data = request.get_json()
+    search_query = data['data']
+    results = jaccard_search(search_query)
+    # Format results as needed before sending back to the client
+    return jsonify(results)
 
 # @app.route("/episodes")
 # def episodes_search():

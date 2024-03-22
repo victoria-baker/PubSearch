@@ -5,29 +5,33 @@ function keySearch(event) {
   }
 }
 
+// searchbar.js
 function search() {
-  // Your dummy data
-  var dummyData = [
-    { title: "Result 1", description: "This is the first dummy result." },
-    { title: "Result 2", description: "This is the second dummy result." },
-    { title: "Result 3", description: "This is the third dummy result." }
-  ];
-  
-  displayResults(dummyData);
+  var searchTerm = document.getElementById('searchInput').value;
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '/send-data', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      var results = JSON.parse(xhr.responseText);
+      displayResults(results);
+    }
+  };
+  xhr.send(JSON.stringify({ data: searchTerm }));
 }
 
-function displayResults(data){
+function displayResults(data) {
   // Clear previous search results
   document.getElementById('results').innerHTML = '';
-
-  // Assuming you want to show the title and description
-  data.forEach(result => {
+  // Display each result
+  data.forEach(function(result, index) {
     var resultDiv = document.createElement('div');
-    resultDiv.className = 'result-item'; // Add some class for styling
-    resultDiv.innerHTML = '<h2>' + result.title + '</h2><p>' + result.description + '</p>';
+    resultDiv.className = 'result-item'; 
+    resultDiv.innerHTML = '<h2>' + index + '. ' + result.title + '</h2><p>' + result.link + '</p>';
     document.getElementById('results').appendChild(resultDiv);
   });
 }
+
 
 // Attach the search function to the window object so it's available globally
 window.search = search;

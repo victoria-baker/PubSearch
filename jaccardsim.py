@@ -87,4 +87,4 @@ def search(words):
 
 	results = []
 	for a in range(len(sorted_array)):
-		results.append((a+1,": "+sorted_array[a][1]+" "+sorted_array[a][2]))
+		results.append((sorted_array[a][1]+" "+sorted_array[a][2]))
