@@ -15,8 +15,6 @@ def receive_data():
     # Get data from the request
     data = request.get_json()
 
-    print("DATA",data)
-    #search(data)
 
     # Return a response
     return jsonify(processed_data)
@@ -44,7 +42,7 @@ def search(words):
 	dflist.append(resultdf)
 	df = pd.concat(dflist)
 
-	d = df.drop_duplicates(subset = ['abstract'], keep = 'last').reset_index(drop = True)
+	#d = df.drop_duplicates(subset = ['abstract'], keep = 'last').reset_index(drop = True)
 
 	corpus = []
 	articleMap = {}
@@ -67,10 +65,17 @@ def search(words):
 		#print(firstID)
 		link = "https://pubmed.ncbi.nlm.nih.gov/"+firstID+"/"
 
+		print("title:", title)
+		print("abstract:",abstract)
+		if abstract == None:
+			abstract = ''
 		corpus.append(abstract)
 		articleMap[abstract] = (title,link)
 
+
 	X_train_counts = count_vect.fit_transform(corpus)
+
+	print("WE MADE IT")
 
 	pd.DataFrame(X_train_counts.toarray(),columns=count_vect.get_feature_names_out())
 
@@ -90,4 +95,5 @@ def search(words):
 		results.append((sorted_array[a][1]+" "+sorted_array[a][2]))
 		#results.append({'result': sorted_array[a][1] + " " + sorted_array[a][2]})
 
+	print("DONE with JACCARD")
 	return results
