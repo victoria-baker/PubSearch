@@ -5,8 +5,19 @@ function keySearch(event) {
   }
 }
 
+function display_searching() {
+  var main_text = document.getElementById('welcomeText');
+  main_text.innerText = "Returning results from your search...";
+}
+
+function display_finish() {
+  var main_text = document.getElementById('welcomeText');
+  main_text.innerText = "Does this look right?";
+}
+
 // searchbar.js
 function search() {
+  display_searching();
   var searchTerm = document.getElementById('searchInput').value;
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/send-data', true);
@@ -33,6 +44,7 @@ function displayResults(data) {
     resultDiv.innerHTML = '<h2>' + (index + 1) + '. ' + result + '</h2>';
     document.getElementById('results').appendChild(resultDiv);
   });
+  display_finish();
 }
 
 
