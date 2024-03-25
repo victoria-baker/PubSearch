@@ -60,3 +60,12 @@ body {
     font-size: 3.25rem;
     margin-bottom: 1.5rem;
   }
+
+  .results-container{
+    background-color:#a6a8ac;
+    margin-top: 30px;
+    margin-left: 15px;
+    margin-right: 15px;
+    padding: 30px;
+    border-radius: 20px;
+  }
