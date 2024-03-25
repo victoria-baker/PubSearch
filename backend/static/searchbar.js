@@ -15,6 +15,11 @@ function display_finish() {
   main_text.innerText = "Does this look right?";
 }
 
+function display_results_container() {
+  var results_container = document.getElementById('resultsContainer');
+  results_container.style.display= "block";
+}
+
 // searchbar.js
 function search() {
   display_searching();
@@ -45,6 +50,7 @@ function displayResults(data) {
     document.getElementById('results').appendChild(resultDiv);
   });
   display_finish();
+  display_results_container();
 }
 
 

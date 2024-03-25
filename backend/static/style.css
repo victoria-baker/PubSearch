@@ -62,6 +62,7 @@ body {
   }
 
   .results-container{
+    display: none;
     background-color:#a6a8ac;
     margin-top: 30px;
     margin-left: 15px;
