@@ -31,7 +31,7 @@ def search(words):
     pubmed = PubMed(tool="PubSearch", email="yjc22@cornell.edu")
 
     q = words
-    query = '(("1970/01/01"[Date - Create] : "2040"[Date - Create])) AND ' + words
+    query = '(("1970/01/01"[Date - Create] : "2040"[Date - Create])) AND ffrft[Filter] AND ' + words
 
     results = pubmed.query(query, max_results=10)
 
