@@ -49,9 +49,10 @@ function displayResults(data) {
     var parts = result.split("@");
     var title = parts[0]; // publication title
     var linky = parts[1]; // publication link
+    var abstract = parts[2]; // abstract
     var final_result = title.link(linky);
     //resultDiv.innerHTML = '<h2>' + index + '. ' + result.title + '</h2><p>' + result.link + '</p>';
-    resultDiv.innerHTML = '<h2>' + (index + 1) + ' ' + final_result + '</h2>';
+    resultDiv.innerHTML = '<br><h2>'  + final_result +'</h2><br>' + abstract;
     document.getElementById('results').appendChild(resultDiv);
   });
   display_finish();
