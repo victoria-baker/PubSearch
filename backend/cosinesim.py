@@ -1,6 +1,8 @@
 from pymed import PubMed
 import pandas as pd
 import sklearn
+import numpy as np
+from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics import jaccard_score
@@ -105,8 +107,12 @@ def search(words):
 
 
 		results = []
-		for a in range(min(len(sorted_array),10)):
-			results.append((sorted_array[a][1]+"@"+sorted_array[a][2]))
+		for a in range(min(len(sorted_array),5)):
+			abstract_lines = sorted_array[a][3].split("\n")
+			abstract_final = ""
+			for i in range(min(10, len(abstract_lines))):
+				abstract_final += abstract_lines[i]
+			results.append((sorted_array[a][1]+"@"+sorted_array[a][2]+"@"+abstract_final+".."))
 			print((sorted_array[a][1]+"@"+sorted_array[a][2])+"\n")
 		return results
 	else:
