@@ -52,7 +52,11 @@ function displayResults(data) {
     var abstract = parts[2]; // abstract
     var final_result = title.link(linky);
     //resultDiv.innerHTML = '<h2>' + index + '. ' + result.title + '</h2><p>' + result.link + '</p>';
-    resultDiv.innerHTML = '<br><h2 style="font-weight: bold; font-size: larger;">'  + final_result +'</h2><br>' + abstract;
+    var title_html = document.createElement('h2');
+    title_html.classList.add('title-link');
+    title_html.innerHTML = final_result;
+    resultDiv.appendChild(title_html);
+    resultDiv.innerHTML += '<br>' + abstract;
     document.getElementById('results').appendChild(resultDiv);
   });
   display_finish();
