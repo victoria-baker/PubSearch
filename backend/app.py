@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import pandas as pd
-from jaccardsim import search as jaccard_search
+from cosinesim import search as cosine_search
 
 # ROOT_PATH for linking with all your files.
 # Feel free to use a config.py or settings.py with a global export variable
@@ -37,7 +37,7 @@ def receive_data():
     search_query = data["data"]
     print("STARTING")
     print(search_query)
-    results = jaccard_search(search_query)
+    results = cosine_search(search_query)
     print("RESULTS", results)
     # Format results as needed before sending back to the client
     return results
