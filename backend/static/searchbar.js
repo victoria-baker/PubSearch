@@ -45,8 +45,13 @@ function displayResults(data) {
   data.forEach(function (result, index) {
     var resultDiv = document.createElement('div');
     resultDiv.className = 'result-item';
+
+    var parts = result.split("@");
+    var title = parts[0]; // publication title
+    var linky = parts[1]; // publication link
+    var final_result = title.link(linky);
     //resultDiv.innerHTML = '<h2>' + index + '. ' + result.title + '</h2><p>' + result.link + '</p>';
-    resultDiv.innerHTML = '<h2>' + (index + 1) + '. ' + result + '</h2>';
+    resultDiv.innerHTML = '<h2>' + (index + 1) + ' ' + final_result + '</h2>';
     document.getElementById('results').appendChild(resultDiv);
   });
   display_finish();
