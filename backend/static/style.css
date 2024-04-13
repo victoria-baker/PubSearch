@@ -91,3 +91,12 @@ body {
 h2{
   font-weight: bold;
 }
+
+.title-link{
+  font-weight: bold;
+  font-size: larger;
+}
+
+.title-link:hover{
+  color: #3a74fb;
+}
