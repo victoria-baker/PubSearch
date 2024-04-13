@@ -29,7 +29,7 @@ def search(words):
 	q = words
 	query =  '(("1970/01/01"[Date - Create] : "2040"[Date - Create])) AND ffrft[Filter] AND '+words
 
-	results = pubmed.query(query, max_results=50)
+	results = pubmed.query(query, max_results=10)
 
 	dflist = []
 
