@@ -15,7 +15,7 @@ body {
     padding-bottom: 0.5rem;
     border-radius: 9999px;
     width: 24rem;
-    background-image: linear-gradient(to right, #a6a8ac, #a6a8ac); */
+    background-image: linear-gradient(to right, #b1b1b1, #b1b1b1); */
     border: none;
     outline: none;
     color: black;
@@ -76,7 +76,15 @@ body {
     padding: 15px;
     border: 1px solid #ddd;  /* Light grey border */
     border-radius: 8px;      /* Rounded corners */
-    background-color: #525151; /* Light grey background */
+    background-color: #b1b1b1; /* Light grey background */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
     width: 80%;              /* Set width, adjust as needed */
+}
+
+.results{
+  color: #525151;
+}
+
+h2{
+  font-weight: bold;
 }
