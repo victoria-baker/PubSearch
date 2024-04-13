@@ -104,7 +104,7 @@ def search(words):
 
 
 	results = []
-	for a in range(min(len(sorted_array),10)):
+	for a in range(min(len(sorted_array),5)):
 		abstract_lines = sorted_array[a][3].split("\n")
 		abstract_final = "\n".join(abstract_lines[:10])
 		results.append((sorted_array[a][1]+"@"+sorted_array[a][2]+"@"+sorted_array[a][3]+ ".."))
