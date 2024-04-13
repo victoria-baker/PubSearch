@@ -96,7 +96,7 @@ def search(words):
 
 	results = []
 	for a in range(len(sorted_array)):
-		results.append((sorted_array[a][1]+" "+sorted_array[a][2]))
+		results.append((sorted_array[a][1]+"@"+sorted_array[a][2]))
 		#results.append({'result': sorted_array[a][1] + " " + sorted_array[a][2]})
 
 	print("DONE with COSINE")
