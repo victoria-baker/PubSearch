@@ -1,11 +1,14 @@
 body {
-  background-color: #ededed;
+  background-color: #90B0FC;
   display: flex;
   flex-direction: column;
   align-items: center;
   /* Removed justify-content to allow natural flow */
   min-height: 100vh; /* use min-height instead of height */
+  font-family: 'Karla', sans-serif;
 }
+
+
 
 .search-bar {
     padding-left: 2.5rem;
@@ -15,7 +18,7 @@ body {
     padding-bottom: 0.5rem;
     border-radius: 9999px;
     width: 24rem;
-    background-image: linear-gradient(to right, #b1b1b1, #b1b1b1); */
+    background-image: linear-gradient(to right, #ffffff, #ffffff); */
     border: none;
     outline: none;
     color: black;
@@ -46,13 +49,13 @@ body {
     background: transparent;
     border: none;
     cursor: pointer;
-    color: #08639b;
+    color: #90B0FC;
     /*Change the color if needed! */
     z-index: 10;
   }
   
   .welcome-text {
-    background: -webkit-linear-gradient(#72b2da, #08639b);
+    background: -webkit-linear-gradient(#ffffff, #ffffff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-align: center;
@@ -76,13 +79,13 @@ body {
     padding: 15px;
     border: 1px solid #ddd;  /* Light grey border */
     border-radius: 8px;      /* Rounded corners */
-    background-color: #b1b1b1; /* Light grey background */
+    background-color: #ffffff; /* White background */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
     width: 80%;              /* Set width, adjust as needed */
-}
-
+    color: #000000;          /* Black text */
+  }
 .results{
-  color: #525151;
+  color: #000000;
 }
 
 h2{
