@@ -1,12 +1,11 @@
 body {
-  background-color: #c6c9cd; /* Soft black */
+  background-color: #c6c9cd;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
+  /* Removed justify-content to allow natural flow */
+  min-height: 100vh; /* use min-height instead of height */
 }
-
 
 .search-bar {
     padding-left: 2.5rem;
@@ -61,7 +60,7 @@ body {
     margin-bottom: 1.5rem;
   }
 
-  .results-container{
+  /* .results-container{
     display: none;
     background-color:#a6a8ac;
     margin-top: 30px;
@@ -70,4 +69,14 @@ body {
     padding: 30px;
     border-radius: 20px;
     overflow-x: auto;
-  }
+  } */
+
+  .result-item {
+    margin: 10px auto;
+    padding: 15px;
+    border: 1px solid #ddd;  /* Light grey border */
+    border-radius: 8px;      /* Rounded corners */
+    background-color: #525151; /* Light grey background */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+    width: 80%;              /* Set width, adjust as needed */
+}
