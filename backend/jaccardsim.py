@@ -106,7 +106,6 @@ def search(words):
     for a in range(len(sorted_array)):
         if (sorted_array[a][1] + "@" + sorted_array[a][2]) not in results:
             results.append((sorted_array[a][1] + "@" + sorted_array[a][2]))
-        # results.append({'result': sorted_array[a][1] + " " + sorted_array[a][2]})
 
     print("DONE with JACCARD")
     return results
