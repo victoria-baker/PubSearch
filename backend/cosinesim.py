@@ -19,9 +19,6 @@ def receive_data():
     # Return a response
     return jsonify(processed_data)
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
 
 def search(words): 
 
@@ -32,7 +29,7 @@ def search(words):
 	q = words
 	query =  '(("1970/01/01"[Date - Create] : "2040"[Date - Create])) AND ffrft[Filter] AND '+words
 
-	results = pubmed.query(query, max_results=10)
+	results = pubmed.query(query, max_results=50)
 
 	dflist = []
 
@@ -42,7 +39,7 @@ def search(words):
 	dflist.append(resultdf)
 	df = pd.concat(dflist)
 
-	#d = df.drop_duplicates(subset = ['abstract'], keep = 'last').reset_index(drop = True)
+	df = df.drop_duplicates(subset = ['abstract'], keep = 'last').reset_index(drop = True)
 
 	corpus = []
 	articleMap = {}
@@ -57,6 +54,9 @@ def search(words):
 		firstID = ""
 		rest = ""
 
+		if title == "" or abstract == "":
+			continue
+
 		if '\n' in ids:
 			firstID, rest = ids.split('\n', 1)
 		else:
@@ -65,22 +65,29 @@ def search(words):
 		#print(firstID)
 		link = "https://pubmed.ncbi.nlm.nih.gov/"+firstID+"/"
 
-		print("title:", title)
-		print("abstract:",abstract)
+	
 		if abstract == None:
 			abstract = ''
 		corpus.append(abstract)
 		articleMap[abstract] = (title,link)
 
-
 	X_train_counts = count_vect.fit_transform(corpus)
 
-	print("WE MADE IT")
 
-	pd.DataFrame(X_train_counts.toarray(),columns=count_vect.get_feature_names_out())
+	svd = TruncatedSVD(n_components=4, random_state=42)
+	X_svd = svd.fit_transform(X_train_counts)
 
+	singular_values = svd.singular_values_
+	threshold = 0.5  # Set your threshold
+	important_indices = np.where(singular_values > threshold)[0]
 
-	similarity = cosine_similarity(X_train_counts[0:1], X_train_counts)
+	X_filtered = np.dot(X_svd[:, important_indices], np.diag(singular_values[important_indices]))
+
+	query_vector = count_vect.transform([words])  
+	query_svd = svd.transform(query_vector)
+	query_filtered = np.dot(query_svd[:, important_indices], np.diag(singular_values[important_indices]))
+
+	similarity = cosine_similarity(query_filtered.reshape(1, -1), X_filtered)
 
 	sims = []
 	for a in range(1,len(similarity[0])):
@@ -95,13 +102,11 @@ def search(words):
 
 
 	results = []
-	for a in range(len(sorted_array)):
-		abstract_lines = sorted_array[a][3].split(".")
-		abstract_final = ""
-		for i in range(min(4, len(abstract_lines))):
-			abstract_final += abstract_lines[i] + "."
-		results.append((sorted_array[a][1]+"@"+sorted_array[a][2]+"@"+abstract_final))
-		#results.append({'result': sorted_array[a][1] + " " + sorted_array[a][2]})
-
-	print("DONE with COSINE")
+	for a in range(min(len(sorted_array),10)):
+		results.append((sorted_array[a][1]+"@"+sorted_array[a][2]))
+		#print((sorted_array[a][1]+"@"+sorted_array[a][2])+"\n")
 	return results
+
+	
+if __name__ == '__main__':
+    app.run(debug=True)
