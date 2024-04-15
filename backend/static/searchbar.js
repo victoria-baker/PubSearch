@@ -52,35 +52,25 @@ function displayResults(data) {
   data.forEach(function (result, index) {
     var resultDiv = document.createElement('div');
     resultDiv.className = 'result-item';
-
+  
     var parts = result.split("@");
     var title = parts[0]; // publication title
     var linky = parts[1]; // publication link
     var abstract = parts[2]; // abstract
     
-    var titleElement = document.createElement('span'); // Create a span for title
+    var titleElement = document.createElement('span');
     titleElement.className = 'result-title';
     titleElement.textContent = title;
-    titleElement.onclick = function() { window.open(linky, '_blank'); }; // Open link in new tab
-    titleElement.style.cursor = 'pointer'; // Make it look clickable
-
-    var final_result = document.createElement('h2');
-    final_result.appendChild(titleElement);
-    resultDiv.appendChild(final_result);
-
+    titleElement.onclick = function() { window.open(linky, '_blank'); };
+    titleElement.style.cursor = 'pointer';
+  
+    resultDiv.appendChild(titleElement); // Append the title element
+  
     var abstractElement = document.createElement('p');
     abstractElement.innerHTML = abstract;
-    resultDiv.appendChild(abstractElement);
-
-    var final_result = title.link(linky);
-    //resultDiv.innerHTML = '<h2>' + index + '. ' + result.title + '</h2><p>' + result.link + '</p>';
-    var title_html = document.createElement('h2');
-    title_html.classList.add('title-link');
-    title_html.innerHTML = final_result;
-    resultDiv.appendChild(title_html);
-    resultDiv.innerHTML += '<br>' + abstract;
-    
-    document.getElementById('results').appendChild(resultDiv);
+    resultDiv.appendChild(abstractElement); // Append the abstract
+  
+    document.getElementById('results').appendChild(resultDiv); // Append resultDiv to the container
   });
   display_finish();
   display_results_container();
