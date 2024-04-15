@@ -84,6 +84,21 @@ body {
       transform: translateY(0);
     }
   }
+
+  .result-title {
+    text-decoration: none;  /* Removes underline */
+    color: black;           /* Initial color */
+    font-weight: bold;      /* Makes the font bold */
+    font-size: larger;      /* Increases the font size */
+    cursor: pointer;        /* Changes the cursor to indicate it's clickable */
+  }
+  
+  
+  .result-title:hover {
+    color: #5555FF;         /* Color when hovered */
+    text-decoration: underline; /* Underline on hover to indicate it's clickable */
+  }
+  
   
 
   .result-item {
