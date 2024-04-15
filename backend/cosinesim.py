@@ -1,5 +1,7 @@
 from pymed import PubMed
 import pandas as pd
+from Bio import Entrez
+from Bio import Medline
 import sklearn
 import numpy as np
 from sklearn.decomposition import TruncatedSVD
@@ -11,111 +13,148 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+Entrez.email = "vb272@cornell.edu"
+
+
 # Route to handle incoming data
-@app.route('/send-data', methods=['POST'])
+@app.route("/send-data", methods=["POST"])
 def receive_data():
     # Get data from the request
     data = request.get_json()
 
-
     # Return a response
     return jsonify(processed_data)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)
 
 
-def search(words): 
+def search(words):
 
-	count_vect = CountVectorizer()
+    count_vect = CountVectorizer()
 
-	pubmed = PubMed(tool="PubSearch", email="yjc22@cornell.edu")
+    pubmed = PubMed(tool="PubSearch", email="yjc22@cornell.edu")
+    q = words
+    query = (
+        '(("1970/01/01"[Date - Create] : "2040"[Date - Create])) AND ffrft[Filter] AND '
+        + words
+    )
 
-	q = words
-	query =  '(("1970/01/01"[Date - Create] : "2040"[Date - Create])) AND ffrft[Filter] AND '+words
+    results = pubmed.query(query, max_results=50)
 
-	results = pubmed.query(query, max_results=50)
+    dflist = []
 
-	dflist = []
+    resultdf = pd.DataFrame([item.toDict() for item in results])
+    # resultdf = resultdf[resultdf.abstract.notna()]
 
-	resultdf = pd.DataFrame([item.toDict() for item in results])
-	#resultdf = resultdf[resultdf.abstract.notna()]
+    dflist.append(resultdf)
+    df = pd.concat(dflist)
 
-	dflist.append(resultdf)
-	df = pd.concat(dflist)
+    df = df.drop_duplicates(subset=["abstract"], keep="last").reset_index(drop=True)
 
-	df = df.drop_duplicates(subset = ['abstract'], keep = 'last').reset_index(drop = True)
+    corpus = []
+    articleMap = {}
+    citations_count = {}
+    corpus.append(q)
 
-	corpus = []
-	articleMap = {}
-	corpus.append(q)
+    for index, article in df.iterrows():
+        abstract = article["abstract"]
+        title = article["title"]
+        authors = article["authors"]
+        ids = article["pubmed_id"]
+        firstID = ""
+        rest = ""
 
+        if title == "" or abstract == "":
+            continue
 
-	for index, article in df.iterrows():
-		abstract = article['abstract']
-		title = article['title']
-		authors = article['authors']
-		ids = article['pubmed_id']
-		firstID = ""
-		rest = ""
+        if "\n" in ids:
+            firstID, rest = ids.split("\n", 1)
+        else:
+            firstID = ids
 
-		if title == "" or abstract == "":
-			continue
+        # print(firstID)
+        link = "https://pubmed.ncbi.nlm.nih.gov/" + firstID + "/"
 
-		if '\n' in ids:
-			firstID, rest = ids.split('\n', 1)
-		else:
-			firstID = ids
+        if abstract == None:
+            abstract = ""
+        corpus.append(abstract)
+        articleMap[abstract] = (title, link)
+        citation_query = Entrez.read(
+            Entrez.elink(
+                dbfrom="pubmed",
+                db="pmc",
+                LinkName="pubmed_pubmed_citedin",
+                from_uid=firstID,
+            )
+        )
+        if citation_query and citation_query[0]["LinkSetDb"]:
+            citations = str(len(citation_query[0]["LinkSetDb"][0]["Link"]))
+        else:
+            citations = "0"
 
-		#print(firstID)
-		link = "https://pubmed.ncbi.nlm.nih.gov/"+firstID+"/"
+        citations_count[abstract] = citations
 
-	
-		if abstract == None:
-			abstract = ''
-		corpus.append(abstract)
-		articleMap[abstract] = (title,link)
+    X_train_counts = count_vect.fit_transform(corpus)
 
-	X_train_counts = count_vect.fit_transform(corpus)
+    if X_train_counts.shape[0] > 1:
+        svd = TruncatedSVD(n_components=2, random_state=42)
+        X_svd = svd.fit_transform(X_train_counts)
 
-	if X_train_counts.shape[0] > 1:
-		svd = TruncatedSVD(n_components=2, random_state=42)
-		X_svd = svd.fit_transform(X_train_counts)
+        singular_values = svd.singular_values_
+        threshold = 0.5  # Set your threshold
+        important_indices = np.where(singular_values > threshold)[0]
 
-		singular_values = svd.singular_values_
-		threshold = 0.5  # Set your threshold
-		important_indices = np.where(singular_values > threshold)[0]
+        X_filtered = np.dot(
+            X_svd[:, important_indices], np.diag(singular_values[important_indices])
+        )
 
-		X_filtered = np.dot(X_svd[:, important_indices], np.diag(singular_values[important_indices]))
+        query_vector = count_vect.transform([words])
+        query_svd = svd.transform(query_vector)
+        query_filtered = np.dot(
+            query_svd[:, important_indices], np.diag(singular_values[important_indices])
+        )
 
-		query_vector = count_vect.transform([words])  
-		query_svd = svd.transform(query_vector)
-		query_filtered = np.dot(query_svd[:, important_indices], np.diag(singular_values[important_indices]))
+        similarity = cosine_similarity(query_filtered.reshape(1, -1), X_filtered)
 
-		similarity = cosine_similarity(query_filtered.reshape(1, -1), X_filtered)
+        sims = []
+        for a in range(1, len(similarity[0])):
+            sims.append(similarity[0][a])
 
-		sims = []
-		for a in range(1,len(similarity[0])):
-			sims.append(similarity[0][a])
+        sorter = []
 
-		sorter = []
+        for a in range(1, len(corpus)):
+            sorter.append(
+                (
+                    sims[a - 1],
+                    articleMap[corpus[a]][0],
+                    articleMap[corpus[a]][1],
+                    corpus[a],
+                    citations_count[corpus[a]],
+                )
+            )
 
-		for a in range(1,len(corpus)):
-			sorter.append((sims[a-1],articleMap[corpus[a]][0],articleMap[corpus[a]][1],corpus[a]))
+        sorted_array = sorted(sorter)
 
-		sorted_array = sorted(sorter)
-
-
-		results = []
-		for a in range(min(len(sorted_array),5)):
-			abstract_lines = sorted_array[a][3].split(".")
-			abstract_final = ""
-			for i in range(min(10, len(abstract_lines))):
-				abstract_final += abstract_lines[i]
-			results.append((sorted_array[a][1]+"@"+sorted_array[a][2]+"@"+abstract_final+".."))
-			print((sorted_array[a][1]+"@"+sorted_array[a][2])+"\n")
-		return results
-	else:
-		return []
-
-	
+        results = []
+        for a in range(min(len(sorted_array), 5)):
+            abstract_lines = sorted_array[a][3].split(".")
+            abstract_final = ""
+            for i in range(min(10, len(abstract_lines))):
+                abstract_final += abstract_lines[i]
+            results.append(
+                (
+                    sorted_array[a][1]
+                    + "@"
+                    + sorted_array[a][2]
+                    + "@"
+                    + abstract_final
+                    + "@"
+                    + sorted_array[a][4]
+                )
+            )
+            print((sorted_array[a][1] + "@" + sorted_array[a][2]) + "\n")
+        return results
+    else:
+        return []

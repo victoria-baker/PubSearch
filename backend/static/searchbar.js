@@ -17,7 +17,7 @@ function display_finish() {
 
 function display_results_container() {
   var results_container = document.getElementById('resultsContainer');
-  results_container.style.display= "block";
+  results_container.style.display = "block";
 }
 
 // searchbar.js
@@ -52,24 +52,29 @@ function displayResults(data) {
   data.forEach(function (result, index) {
     var resultDiv = document.createElement('div');
     resultDiv.className = 'result-item';
-  
+
     var parts = result.split("@");
     var title = parts[0]; // publication title
     var linky = parts[1]; // publication link
     var abstract = parts[2]; // abstract
-    
+    var citations = parts[3]; // citations
+
     var titleElement = document.createElement('span');
     titleElement.className = 'result-title';
     titleElement.textContent = title;
-    titleElement.onclick = function() { window.open(linky, '_blank'); };
+    titleElement.onclick = function () { window.open(linky, '_blank'); };
     titleElement.style.cursor = 'pointer';
-  
+
     resultDiv.appendChild(titleElement); // Append the title element
-  
+
     var abstractElement = document.createElement('p');
     abstractElement.innerHTML = abstract;
     resultDiv.appendChild(abstractElement); // Append the abstract
-  
+
+    var citationsElement = document.createElement('p');
+    citationsElement.innerHTML = 'Citation Count:  ' + citations;
+    resultDiv.appendChild(citationsElement); // Append the citations
+
     document.getElementById('results').appendChild(resultDiv); // Append resultDiv to the container
   });
   display_finish();
