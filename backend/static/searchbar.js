@@ -41,6 +41,13 @@ function displayResults(data) {
   document.getElementById('results').innerHTML = '';
   // Display each result
   console.log("This is a message!");
+  // Displays message if there are no results
+  if (data.length === 0) {
+    // Display a message indicating no results found
+    document.getElementById('results').innerHTML = '<p>No articles found. Please input another query.</p>';
+    display_finish();
+    return;
+  }
   //alert("This is a message!");
   data.forEach(function (result, index) {
     var resultDiv = document.createElement('div');
