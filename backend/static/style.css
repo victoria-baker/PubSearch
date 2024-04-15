@@ -11,19 +11,26 @@ body {
 
 
 .search-bar {
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-    /* Adjusted to make room for the button */
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    border-radius: 9999px;
-    width: 24rem;
-    background-image: linear-gradient(to right, #ffffff, #ffffff); */
-    border: none;
-    outline: none;
-    color: black;
-    position: relative;
-  }
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-radius: 9999px;
+  width: 24rem;
+  background-image: linear-gradient(to right, #ffffff, #ffffff);
+  border: none;
+  outline: none;
+  color: black;
+  position: relative;
+  transition: box-shadow 0.2s linear, width 0.5s ease; /* Transition for smooth glow effect and width change */
+}
+
+.search-bar:focus, .search-bar:hover {
+  outline: none;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed; /* Glowing effect */
+  width: 26rem; /* Slightly increase width on focus or hover */
+}
   
   .search-bar::placeholder {
     color: black;
@@ -61,6 +68,8 @@ body {
     text-align: center;
     font-size: 3.25rem;
     margin-bottom: 1.5rem;
+    font-weight: bold;      /* Makes the font bold */
+  
   }
 
   /* .results-container{
@@ -74,7 +83,37 @@ body {
     overflow-x: auto;
   } */
 
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .result-title {
+    text-decoration: none;  /* Removes underline */
+    color: black;           /* Initial color */
+    font-weight: bold;      /* Makes the font bold */
+    font-size: larger;      /* Increases the font size */
+    cursor: pointer;        /* Changes the cursor to indicate it's clickable */
+  }
+  
+  
+  .result-title:hover {
+    color: #5555FF;         /* Color when hovered */
+    text-decoration: underline; /* Underline on hover to indicate it's clickable */
+  }
+  
+  
+
   .result-item {
+    animation: fadeInUp 0.8s ease-out;
+    opacity: 0;
+    animation-fill-mode: forwards;
     margin: 10px auto;
     padding: 15px;
     border: 1px solid #ddd;  /* Light grey border */

@@ -57,6 +57,21 @@ function displayResults(data) {
     var title = parts[0]; // publication title
     var linky = parts[1]; // publication link
     var abstract = parts[2]; // abstract
+    
+    var titleElement = document.createElement('span'); // Create a span for title
+    titleElement.className = 'result-title';
+    titleElement.textContent = title;
+    titleElement.onclick = function() { window.open(linky, '_blank'); }; // Open link in new tab
+    titleElement.style.cursor = 'pointer'; // Make it look clickable
+
+    var final_result = document.createElement('h2');
+    final_result.appendChild(titleElement);
+    resultDiv.appendChild(final_result);
+
+    var abstractElement = document.createElement('p');
+    abstractElement.innerHTML = abstract;
+    resultDiv.appendChild(abstractElement);
+
     var final_result = title.link(linky);
     //resultDiv.innerHTML = '<h2>' + index + '. ' + result.title + '</h2><p>' + result.link + '</p>';
     var title_html = document.createElement('h2');
@@ -64,6 +79,7 @@ function displayResults(data) {
     title_html.innerHTML = final_result;
     resultDiv.appendChild(title_html);
     resultDiv.innerHTML += '<br>' + abstract;
+    
     document.getElementById('results').appendChild(resultDiv);
   });
   display_finish();
