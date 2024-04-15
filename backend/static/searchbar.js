@@ -41,6 +41,13 @@ function displayResults(data) {
   document.getElementById('results').innerHTML = '';
   // Display each result
   console.log("This is a message!");
+  // Displays message if there are no results
+  if (data.length === 0) {
+    // Display a message indicating no results found
+    document.getElementById('results').innerHTML = '<p>No articles found. Please input another query.</p>';
+    display_finish();
+    return;
+  }
   //alert("This is a message!");
   data.forEach(function (result, index) {
     var resultDiv = document.createElement('div');
@@ -65,6 +72,14 @@ function displayResults(data) {
     abstractElement.innerHTML = abstract;
     resultDiv.appendChild(abstractElement);
 
+    var final_result = title.link(linky);
+    //resultDiv.innerHTML = '<h2>' + index + '. ' + result.title + '</h2><p>' + result.link + '</p>';
+    var title_html = document.createElement('h2');
+    title_html.classList.add('title-link');
+    title_html.innerHTML = final_result;
+    resultDiv.appendChild(title_html);
+    resultDiv.innerHTML += '<br>' + abstract;
+    
     document.getElementById('results').appendChild(resultDiv);
   });
   display_finish();

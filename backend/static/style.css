@@ -130,3 +130,20 @@ body {
 h2{
   font-weight: bold;
 }
+
+.title-link{
+  font-weight: bold;
+  font-size: larger;
+}
+
+.title-link:hover{
+  color: #3a74fb;
+}
+
+.text-container{
+  margin-top: 100px;
+}
+
+/* .results-container {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%);
+} */

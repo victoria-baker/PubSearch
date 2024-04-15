@@ -21,6 +21,9 @@ def receive_data():
     # Return a response
     return jsonify(processed_data)
 
+if __name__ == '__main__':
+    app.run(debug=True)
+
 
 def search(words): 
 
@@ -31,7 +34,7 @@ def search(words):
 	q = words
 	query =  '(("1970/01/01"[Date - Create] : "2040"[Date - Create])) AND ffrft[Filter] AND '+words
 
-	results = pubmed.query(query, max_results=10)
+	results = pubmed.query(query, max_results=50)
 
 	dflist = []
 
@@ -75,42 +78,44 @@ def search(words):
 
 	X_train_counts = count_vect.fit_transform(corpus)
 
+	if X_train_counts.shape[0] > 1:
+		svd = TruncatedSVD(n_components=2, random_state=42)
+		X_svd = svd.fit_transform(X_train_counts)
 
-	svd = TruncatedSVD(n_components=4, random_state=42)
-	X_svd = svd.fit_transform(X_train_counts)
+		singular_values = svd.singular_values_
+		threshold = 0.5  # Set your threshold
+		important_indices = np.where(singular_values > threshold)[0]
 
-	singular_values = svd.singular_values_
-	threshold = 0.5  # Set your threshold
-	important_indices = np.where(singular_values > threshold)[0]
+		X_filtered = np.dot(X_svd[:, important_indices], np.diag(singular_values[important_indices]))
 
-	X_filtered = np.dot(X_svd[:, important_indices], np.diag(singular_values[important_indices]))
+		query_vector = count_vect.transform([words])  
+		query_svd = svd.transform(query_vector)
+		query_filtered = np.dot(query_svd[:, important_indices], np.diag(singular_values[important_indices]))
 
-	query_vector = count_vect.transform([words])  
-	query_svd = svd.transform(query_vector)
-	query_filtered = np.dot(query_svd[:, important_indices], np.diag(singular_values[important_indices]))
+		similarity = cosine_similarity(query_filtered.reshape(1, -1), X_filtered)
 
-	similarity = cosine_similarity(query_filtered.reshape(1, -1), X_filtered)
+		sims = []
+		for a in range(1,len(similarity[0])):
+			sims.append(similarity[0][a])
 
-	sims = []
-	for a in range(1,len(similarity[0])):
-		sims.append(similarity[0][a])
+		sorter = []
 
-	sorter = []
+		for a in range(1,len(corpus)):
+			sorter.append((sims[a-1],articleMap[corpus[a]][0],articleMap[corpus[a]][1],corpus[a]))
 
-	for a in range(1,len(corpus)):
-		sorter.append((sims[a-1],articleMap[corpus[a]][0],articleMap[corpus[a]][1],corpus[a]))
-
-	sorted_array = sorted(sorter)
+		sorted_array = sorted(sorter)
 
 
-	results = []
-	for a in range(min(len(sorted_array),5)):
-		abstract_lines = sorted_array[a][3].split("\n")
-		abstract_final = "\n".join(abstract_lines[:10])
-		results.append((sorted_array[a][1]+"@"+sorted_array[a][2]+"@"+sorted_array[a][3]+ ".."))
-		#print((sorted_array[a][1]+"@"+sorted_array[a][2])+"\n")
-	return results
+		results = []
+		for a in range(min(len(sorted_array),5)):
+			abstract_lines = sorted_array[a][3].split(".")
+			abstract_final = ""
+			for i in range(min(10, len(abstract_lines))):
+				abstract_final += abstract_lines[i]
+			results.append((sorted_array[a][1]+"@"+sorted_array[a][2]+"@"+abstract_final+".."))
+			print((sorted_array[a][1]+"@"+sorted_array[a][2])+"\n")
+		return results
+	else:
+		return []
 
 	
-if __name__ == '__main__':
-    app.run(debug=True)
