@@ -9,29 +9,80 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics import jaccard_score
 from flask import Flask, request, jsonify
+import time
+import concurrent.futures
+import threading
+from collections import OrderedDict
 
 
 app = Flask(__name__)
 
-Entrez.email = "vb272@cornell.edu"
-
-
 # Route to handle incoming data
-@app.route("/send-data", methods=["POST"])
+@app.route('/send-data', methods=['POST'])
 def receive_data():
     # Get data from the request
     data = request.get_json()
 
+
     # Return a response
     return jsonify(processed_data)
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
 
 
-def search(words):
+Entrez.email = "vb272@cornell.edu"
 
+def process_article(article, corpus, articleMap):
+    abstract = article["abstract"]
+    title = article["title"]
+    authors = article["authors"]
+    ids = article["pubmed_id"]
+    firstID = ""
+    rest = ""
+
+    if title == "" or abstract == "":
+        return
+
+    if "\n" in ids:
+        firstID, rest = ids.split("\n", 1)
+    else:
+        firstID = ids
+
+    link = "https://pubmed.ncbi.nlm.nih.gov/" + firstID + "/"
+
+    if abstract == None:
+        abstract = ""
+    corpus.append(abstract)
+    
+    citation_query = Entrez.read(
+        Entrez.elink(
+            dbfrom="pubmed",
+            db="pmc",
+            LinkName="pubmed_pubmed_citedin",
+            from_uid=firstID,
+        )
+    )
+    if citation_query and citation_query[0]["LinkSetDb"]:
+        citations = str(len(citation_query[0]["LinkSetDb"][0]["Link"]))
+    else:
+        citations = "0"
+
+    articleMap[abstract] = (title, link, citations)
+    
+def process_articles_multithread(df, corpus, articleMap):
+    threads = []
+    for index, article in df.iterrows():
+        thread = threading.Thread(target=process_article, args=(article, corpus, articleMap))
+        thread.start()
+        threads.append(thread)
+        time.sleep(0.4) # change?
+
+    for thread in threads:
+        thread.join()
+
+def search(words):
+    #start = time.perf_counter()
     count_vect = CountVectorizer()
 
     pubmed = PubMed(tool="PubSearch", email="yjc22@cornell.edu")
@@ -42,11 +93,12 @@ def search(words):
     )
 
     results = pubmed.query(query, max_results=50)
+    start1 = time.perf_counter()
+    #print(start1-start)
 
     dflist = []
 
     resultdf = pd.DataFrame([item.toDict() for item in results])
-    # resultdf = resultdf[resultdf.abstract.notna()]
 
     dflist.append(resultdf)
     df = pd.concat(dflist)
@@ -54,48 +106,16 @@ def search(words):
     df = df.drop_duplicates(subset=["abstract"], keep="last").reset_index(drop=True)
 
     corpus = []
-    articleMap = {}
-    citations_count = {}
+    articleMap = OrderedDict()
+    #citations_count = {}
     corpus.append(q)
+    #added = time.perf_counter()
+    #print(added-start)
 
-    for index, article in df.iterrows():
-        abstract = article["abstract"]
-        title = article["title"]
-        authors = article["authors"]
-        ids = article["pubmed_id"]
-        firstID = ""
-        rest = ""
+    process_articles_multithread(df, corpus, articleMap)
 
-        if title == "" or abstract == "":
-            continue
-
-        if "\n" in ids:
-            firstID, rest = ids.split("\n", 1)
-        else:
-            firstID = ids
-
-        # print(firstID)
-        link = "https://pubmed.ncbi.nlm.nih.gov/" + firstID + "/"
-
-        if abstract == None:
-            abstract = ""
-        corpus.append(abstract)
-        articleMap[abstract] = (title, link)
-        citation_query = Entrez.read(
-            Entrez.elink(
-                dbfrom="pubmed",
-                db="pmc",
-                LinkName="pubmed_pubmed_citedin",
-                from_uid=firstID,
-            )
-        )
-        if citation_query and citation_query[0]["LinkSetDb"]:
-            citations = str(len(citation_query[0]["LinkSetDb"][0]["Link"]))
-        else:
-            citations = "0"
-
-        citations_count[abstract] = citations
-
+    #end = time.perf_counter()
+    #print(end-start)
     X_train_counts = count_vect.fit_transform(corpus)
 
     if X_train_counts.shape[0] > 1:
@@ -116,6 +136,8 @@ def search(words):
             query_svd[:, important_indices], np.diag(singular_values[important_indices])
         )
 
+        #end2 = time.perf_counter()
+        #print(end2-start)
         similarity = cosine_similarity(query_filtered.reshape(1, -1), X_filtered)
 
         sims = []
@@ -124,16 +146,19 @@ def search(words):
 
         sorter = []
 
-        for a in range(1, len(corpus)):
+        ctr = 0
+        for a in articleMap:
             sorter.append(
                 (
-                    sims[a - 1],
-                    articleMap[corpus[a]][0],
-                    articleMap[corpus[a]][1],
-                    corpus[a],
-                    citations_count[corpus[a]],
+                    sims[ctr],
+                    articleMap[a][0],
+                    articleMap[a][1],
+                    a,
+                    articleMap[a][2],
+                    #citations_count[a],
                 )
             )
+            ctr += 1
 
         sorted_array = sorted(sorter)
 
@@ -155,6 +180,9 @@ def search(words):
                 )
             )
             #print((sorted_array[a][1] + "@" + sorted_array[a][2]) + "\n")
+        #end3 = time.perf_counter()
+        #print(end3-start)
         return results
     else:
         return []
+	
