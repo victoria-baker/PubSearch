@@ -37,7 +37,7 @@ def search(words):
     pubmed = PubMed(tool="PubSearch", email="yjc22@cornell.edu")
     q = words
     query = (
-        '(("1970/01/01"[Date - Create] : "2040"[Date - Create])) AND ffrft[Filter] AND '
+        '(("1970/01/01"[Date - Create] : "2023"[Date - Create])) AND ffrft[Filter] AND '
         + words
     )
 
@@ -154,7 +154,7 @@ def search(words):
                     + sorted_array[a][4]
                 )
             )
-            print((sorted_array[a][1] + "@" + sorted_array[a][2]) + "\n")
+            #print((sorted_array[a][1] + "@" + sorted_array[a][2]) + "\n")
         return results
     else:
         return []
