@@ -55,20 +55,7 @@ def process_article(article, corpus, articleMap):
         abstract = ""
     corpus.append(abstract)
     
-    citation_query = Entrez.read(
-        Entrez.elink(
-            dbfrom="pubmed",
-            db="pmc",
-            LinkName="pubmed_pubmed_citedin",
-            from_uid=firstID,
-        )
-    )
-    if citation_query and citation_query[0]["LinkSetDb"]:
-        citations = str(len(citation_query[0]["LinkSetDb"][0]["Link"]))
-    else:
-        citations = "0"
-
-    articleMap[abstract] = (title, link, citations)
+    articleMap[abstract] = (title, link, firstID)
     
 def process_articles_multithread(df, corpus, articleMap):
     threads = []
@@ -76,13 +63,13 @@ def process_articles_multithread(df, corpus, articleMap):
         thread = threading.Thread(target=process_article, args=(article, corpus, articleMap))
         thread.start()
         threads.append(thread)
-        time.sleep(0.4) # change?
+        #time.sleep(0.4) # change?
 
     for thread in threads:
         thread.join()
 
 def search(words):
-    #start = time.perf_counter()
+    start = time.perf_counter()
     count_vect = CountVectorizer()
 
     pubmed = PubMed(tool="PubSearch", email="yjc22@cornell.edu")
@@ -93,7 +80,7 @@ def search(words):
     )
 
     results = pubmed.query(query, max_results=50)
-    start1 = time.perf_counter()
+    #start1 = time.perf_counter()
     #print(start1-start)
 
     dflist = []
@@ -168,6 +155,20 @@ def search(words):
             abstract_final = ""
             for i in range(min(10, len(abstract_lines))):
                 abstract_final += abstract_lines[i]
+
+            citation_query = Entrez.read(
+            Entrez.elink(
+                dbfrom="pubmed",
+                db="pmc",
+                LinkName="pubmed_pubmed_citedin",
+                from_uid=sorted_array[a][4],
+                )
+            )
+            if citation_query and citation_query[0]["LinkSetDb"]:
+                citations = str(len(citation_query[0]["LinkSetDb"][0]["Link"]))
+            else:
+                citations = "0"
+
             results.append(
                 (
                     sorted_array[a][1]
@@ -176,7 +177,7 @@ def search(words):
                     + "@"
                     + abstract_final
                     + "@"
-                    + sorted_array[a][4]
+                    + citations
                 )
             )
             #print((sorted_array[a][1] + "@" + sorted_array[a][2]) + "\n")
@@ -185,4 +186,3 @@ def search(words):
         return results
     else:
         return []
-	
