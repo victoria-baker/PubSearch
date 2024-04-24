@@ -74,27 +74,27 @@ def process_articles_multithread(df, corpus, articleMap):
     for thread in threads:
         thread.join()
 
-def search(words):
+def search(words, sy, ey, author):
     start = time.perf_counter()
     count_vect = CountVectorizer()
 
     pubmed = PubMed(tool="PubSearch", email="yjc22@cornell.edu")
     
-    query = (
-        'hasabstract AND '
-        + words 
-    )
+    query = ('hasabstract')
 
-    results = pubmed.query(query, max_results=500)
+    if author != "":
+    	query += ' AND ' + author + ' [Author]'
 
-    '''ctr = 0
-    for article in results:
-    	title = article.title
-    	print(ctr,title)
-    	ctr += 1'''
+    if sy == "":
+    	sy = "1900"
+    if ey == "":
+    	ey = "3000"
 
-    start1 = time.perf_counter()
-    print(start1-start,"query done")
+    query += ' AND ('+sy+'[Date - Publication] : '+ey+'[Date - Publication])'
+    query += ' AND '+words
+
+
+    results = pubmed.query(query, max_results=20) #500
 
     dflist = []
 
@@ -179,8 +179,8 @@ def search(words):
                 + citations
             )
         )
-        print(sorted_array[a][1] + "@" + sorted_array[a][2] +"\n")
+        print(sorted_array[a][1] +"\n")
     return results
 
-if __name__ == "__main__":
-    search("mental health and artificial intelligence")
+'''if __name__ == "__main__":
+    search("mental health and artificial intelligence", "", "", "")'''
