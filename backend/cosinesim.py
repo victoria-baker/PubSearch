@@ -150,7 +150,7 @@ def search(words):
 
         sorted_array = sorted(sorter)
 
-		results = []
+	results = []
 		for a in range(min(len(sorted_array),5)):
 			abstract_lines = sorted_array[a][3].split(".")
 			abstract_final = ""
