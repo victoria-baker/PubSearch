@@ -46,7 +46,7 @@ def process_article(article, corpus, articleMap):
     firstID = ""
     rest = ""
 
-    if title == "" or abstract == "":
+    if title == "" or len(abstract) < 20:
         return
 
     if "\n" in ids:
@@ -154,6 +154,7 @@ def search(words, sy, ey, author):
         abstract_final = ""
         for i in range(min(10, len(abstract_lines))):
             abstract_final += abstract_lines[i]
+        abstract_final += "..."
 
         citation_query = Entrez.read(
         Entrez.elink(
@@ -179,7 +180,7 @@ def search(words, sy, ey, author):
                 + citations
             )
         )
-        print(sorted_array[a][1] +"\n")
+        print(sorted_array[a][1] +" "+ abstract_final+"\n")
     return results
 
 '''if __name__ == "__main__":
