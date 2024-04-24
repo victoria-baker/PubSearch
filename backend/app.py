@@ -6,7 +6,7 @@ from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import pandas as pd
 from cosinesim import search as cosine_search
 from jaccardsim import search as jaccard_search
-
+from jaccardsim import getTop5 as return_top5
 # ROOT_PATH for linking with all your files.
 # Feel free to use a config.py or settings.py with a global export variable
 os.environ["ROOT_PATH"] = os.path.abspath(os.path.join("..", os.curdir))
@@ -38,7 +38,7 @@ def receive_data():
     search_query = data["data"]
     print("STARTING")
     print(search_query)
-    results = jaccard_search(search_query)
+    results = return_top5(search_query)
     print("RESULTS", results)
     # Format results as needed before sending back to the client
     return results
