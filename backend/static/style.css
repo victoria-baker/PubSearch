@@ -8,8 +8,6 @@ body {
   font-family: 'Karla', sans-serif;
 }
 
-
-
 .search-bar {
   padding-left: 2.5rem;
   padding-right: 2.5rem;
@@ -108,7 +106,15 @@ body {
     text-decoration: underline; /* Underline on hover to indicate it's clickable */
   }
   
-  
+  .rocchio-button{
+    margin-top: 20px;
+    padding: 10px 10px;
+    background-color: #8496c0;
+    color: rgb(64, 63, 63);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+  }
 
   .result-item {
     animation: fadeInUp 0.8s ease-out;
@@ -123,6 +129,30 @@ body {
     width: 80%;              /* Set width, adjust as needed */
     color: #000000;          /* Black text */
   }
+
+  .thumbs-up {
+    color: #6d6d6d;
+    margin-right: 20px;
+    font-size: 32px;
+  }
+
+  .thumbs-down{
+    color: #6d6d6d;
+    margin-right: 20px;
+    font-size: 32px;
+  }
+
+
+  .button-container{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .thumbs-up:hover, .thumbs-down:hover{
+    color: #5555FF;
+  }
+
 .results{
   color: #000000;
 }
@@ -143,7 +173,3 @@ h2{
 .text-container{
   margin-top: 100px;
 }
-
-/* .results-container {
-  mask-image: linear-gradient(to bottom, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%);
-} */

@@ -20,8 +20,13 @@ function display_results_container() {
   results_container.style.display = "block";
 }
 
+var relList = [];
+var irrelList = [];
+
 // searchbar.js
 function search() {
+  relList = [];
+  irrelList = [];
   display_searching();
   var searchTerm = document.getElementById('searchInput').value;
   var xhr = new XMLHttpRequest();
@@ -33,7 +38,58 @@ function search() {
       displayResults(results);
     }
   };
-  xhr.send(JSON.stringify({ data: searchTerm }));
+  xhr.send(JSON.stringify({data: searchTerm}));
+}
+
+function rerunSearch(){
+  if (relList.length > 0 && irrelList.length > 0){
+  // var xhr = new XMLHttpRequest();
+  // xhr.open('POST', '/send-lists', true);
+  // xhr.setRequestHeader('Content-Type', 'application/json');
+  // xhr.onreadystatechange = function () {
+  //   if (xhr.readyState == 4 && xhr.status == 200) {
+  //     var results = JSON.parse(xhr.responseText);
+  //     displayResults(results);
+  //   }
+  // };
+  // xhr.send(JSON.stringify({
+  //   rel_list: relList,
+  //   irrel_list: irrelList
+  // }));
+  relList = [];
+  irrelList = [];
+}
+}
+
+function relevance(type, index){
+  if (type == 'up'){
+    var indexListIrrel = irrelList.indexOf(index);
+    if (indexListIrrel !== -1) {
+      irrelList.splice(indexListIrrel, 1);
+    }
+    relList.push(index);
+  } else if (type == 'down'){
+    var indexListRel = relList.indexOf(index);
+    if (indexListRel !== -1) {
+      relList.splice(indexListRel, 1);
+    }
+  irrelList.push(index)
+  }
+  // window.alert(relList);
+  // window.alert(irrelList);
+}
+
+function changeColor(type, index){
+  var upButton = document.getElementById('thumbs-up-' + index);
+  var downButton = document.getElementById('thumbs-down-' + index);
+  if (type == 'up'){
+    upButton.style.color = '#5555FF';
+    downButton.style.color = '#6d6d6d';
+  }
+  else if (type =='down'){
+    downButton.style.color = '#5555FF';
+    upButton.style.color = '#6d6d6d';
+  }
 }
 
 function displayResults(data) {
@@ -71,16 +127,41 @@ function displayResults(data) {
     abstractElement.innerHTML = abstract;
     resultDiv.appendChild(abstractElement); // Append the abstract
 
-    var citationsElement = document.createElement('p');
-    citationsElement.innerHTML = 'Citation Count:  ' + citations;
-    resultDiv.appendChild(citationsElement); // Append the citations
+    var citationsElement = document.createElement('span');
+    citationsElement.innerHTML = 'Citation Count: ' + citations;
 
-    document.getElementById('results').appendChild(resultDiv); // Append resultDiv to the container
+    var thumbsUpButton = document.createElement('button');
+    thumbsUpButton.innerHTML = '<i class="fas fa-thumbs-up"></i>';
+    thumbsUpButton.className = 'thumbs-up';
+    thumbsUpButton.id = 'thumbs-up-' + index;
+    thumbsUpButton.onclick = function () {
+      relevance('up', index);
+      changeColor('up', index);
+    };
+
+    var thumbsDownButton = document.createElement('button');
+    thumbsDownButton.innerHTML = '<i class="fas fa-thumbs-down"></i>';
+    thumbsDownButton.className = 'thumbs-down';
+    thumbsDownButton.id = 'thumbs-down-' + index;
+    thumbsDownButton.onclick = function () {
+      relevance('down', index);
+      changeColor('down', index);
+    };
+
+    var buttonContainer = document.createElement('div');
+    buttonContainer.className = 'button-container';
+    buttonContainer.appendChild(thumbsUpButton);
+    buttonContainer.appendChild(thumbsDownButton);
+
+    resultDiv.appendChild(citationsElement);
+    resultDiv.appendChild(buttonContainer);
+
+    document.getElementById('results').appendChild(resultDiv);
   });
   display_finish();
   display_results_container();
+  // console.log('relList:', relList);
 }
-
 
 // Attach the search function to the window object so it's available globally
 window.search = search;

@@ -43,6 +43,14 @@ def receive_data():
     # Format results as needed before sending back to the client
     return results
 
+# @app.route("/send-lists", methods=["POST"])
+# def receive_data():
+#     data = request.get_json()
+#     rel_list = data["rel_list"]
+#     irrel_list = data["irrel_list"]
+#     results = jaccard_search(rel_list, irrel_list)
+#     print("RESULTS", results)
+#     return results
 
 if "DB_NAME" not in os.environ:
     app.run(debug=True, host="0.0.0.0", port=5000)
