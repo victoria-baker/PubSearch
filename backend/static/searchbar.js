@@ -1,3 +1,4 @@
+// when user presses enter, search runs
 function keySearch(event) {
   if (event.key === 'Enter') {
     event.preventDefault();
@@ -5,11 +6,13 @@ function keySearch(event) {
   }
 }
 
+// Changes text to show that search is running
 function display_searching() {
   var main_text = document.getElementById('welcomeText');
   main_text.innerText = "Returning results from your search...";
 }
 
+// Changes text to show that search is done
 function display_finish() {
   var main_text = document.getElementById('welcomeText');
   main_text.innerText = "Does this look right?";
@@ -20,10 +23,11 @@ function display_results_container() {
   results_container.style.display = "block";
 }
 
+// Defining lists for Rocchio's globally
 var relList = [];
 var irrelList = [];
 
-// searchbar.js
+// Sends query to backend and retrives results of search
 function search() {
   relList = [];
   irrelList = [];
@@ -41,9 +45,10 @@ function search() {
   xhr.send(JSON.stringify({data: searchTerm}));
 }
 
+// Runs Rocchio's if user has selected at least one relevant article and one irrelevant article
 function rerunSearch(){
-  display_searching();
   if (relList.length > 0 && irrelList.length > 0){
+  display_searching();
   var searchTerm = document.getElementById('searchInput').value;
   var xhr2 = new XMLHttpRequest();
   xhr2.open('POST', '/send-lists', true);
@@ -64,6 +69,7 @@ function rerunSearch(){
 }
 }
 
+// Updates relevant and irrelevant lists if user click's a thumbs up/down
 function relevance(type, index){
   if (type == 'up'){
     var indexListIrrel = irrelList.indexOf(index);
@@ -80,8 +86,13 @@ function relevance(type, index){
   }
   // window.alert(relList);
   // window.alert(irrelList);
+  if (relList.length > 0 && irrelList.length > 0){
+    var rocchioButton = document.getElementById('rocchio');
+    rocchioButton.style.backgroundColor = '#5171ba';
+  }
 }
 
+// Changes the color of the thumb if it is clicked
 function changeColor(type, index){
   var upButton = document.getElementById('thumbs-up-' + index);
   var downButton = document.getElementById('thumbs-down-' + index);
@@ -95,6 +106,7 @@ function changeColor(type, index){
   }
 }
 
+// Displays the results of the search
 function displayResults(data) {
   // Clear previous search results
   document.getElementById('results').innerHTML = '';
@@ -107,7 +119,7 @@ function displayResults(data) {
     display_finish();
     return;
   }
-  //alert("This is a message!");
+  // Creates every result
   data.forEach(function (result, index) {
     var resultDiv = document.createElement('div');
     resultDiv.className = 'result-item';
@@ -163,7 +175,6 @@ function displayResults(data) {
   });
   display_finish();
   display_results_container();
-  // console.log('relList:', relList);
 }
 
 // Attach the search function to the window object so it's available globally
