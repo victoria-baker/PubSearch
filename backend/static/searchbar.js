@@ -42,20 +42,23 @@ function search() {
 }
 
 function rerunSearch(){
+  display_searching();
   if (relList.length > 0 && irrelList.length > 0){
-  // var xhr = new XMLHttpRequest();
-  // xhr.open('POST', '/send-lists', true);
-  // xhr.setRequestHeader('Content-Type', 'application/json');
-  // xhr.onreadystatechange = function () {
-  //   if (xhr.readyState == 4 && xhr.status == 200) {
-  //     var results = JSON.parse(xhr.responseText);
-  //     displayResults(results);
-  //   }
-  // };
-  // xhr.send(JSON.stringify({
-  //   rel_list: relList,
-  //   irrel_list: irrelList
-  // }));
+  var searchTerm = document.getElementById('searchInput').value;
+  var xhr2 = new XMLHttpRequest();
+  xhr2.open('POST', '/send-lists', true);
+  xhr2.setRequestHeader('Content-Type', 'application/json');
+  xhr2.onreadystatechange = function () {
+    if (xhr2.readyState == 4 && xhr2.status == 200) {
+      var results = JSON.parse(xhr2.responseText);
+      displayResults(results);
+    }
+  };
+  xhr2.send(JSON.stringify({
+    search_term: searchTerm,
+    rel_list: relList,
+    irrel_list: irrelList
+  }));
   relList = [];
   irrelList = [];
 }
