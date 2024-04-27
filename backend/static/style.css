@@ -65,7 +65,7 @@ body {
     -webkit-text-fill-color: transparent;
     text-align: center;
     font-size: 3.25rem;
-    margin-bottom: 1.5rem;
+    /* margin-bottom: 1.5rem; */
     font-weight: bold;      /* Makes the font bold */
   
   }
@@ -108,12 +108,18 @@ body {
   
   .rocchio-button{
     margin-top: 20px;
-    padding: 10px 10px;
-    background-color: #8496c0;
-    color: rgb(64, 63, 63);
-    border-radius: 8px;
+    margin-left: 10px;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: #92aae4;
+    color: #adc5fc;
+    border-radius: 9999px;
     cursor: pointer;
+    height: 40px;
     font-size: 16px;
+    transition: 0.3s;
   }
 
   .result-item {
@@ -153,23 +159,57 @@ body {
     color: #5555FF;
   }
 
-.results{
-  color: #000000;
-}
+  .filter-rocchio-button{
+    display: flex;
+  }
 
-h2{
-  font-weight: bold;
-}
+  .filter-button{
+    margin-top: 20px;
+    margin-right: 10px;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: #6b95f4;
+    color: #ffffff;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-size: 16px;
+    border: 2px solid #6b95f4;
+    transition: 0.3s;
+  }
 
-.title-link{
-  font-weight: bold;
-  font-size: larger;
-}
+  .filter-button:hover{
+    background-color: #ffffff;
+    color: #000000;
+    border-color: #bac9eb;
+  }
 
-.title-link:hover{
-  color: #3a74fb;
-}
+  .desc-text{
+    margin-bottom: 15px;
+    color: #ffffff;
+    font-size: 16px;
+  }
+  
+  .results{
+    color: #000000;
+  }
 
-.text-container{
-  margin-top: 100px;
-}
+  h2{
+    font-weight: bold;
+  }
+
+  .title-link{
+    font-weight: bold;
+    font-size: larger;
+  }
+
+  .title-link:hover{
+    color: #3a74fb;
+  }
+
+  .text-container{
+    margin-top: 120px;
+  }
+
+  

@@ -28,6 +28,12 @@
     </h1>
   </div>
 
+  <div class = "desc-text">
+    <h2>
+      Search through millions of a biomedical texts.
+    </h2>
+  </div>
+
   <!-- Search Bar -->
   <div class="relative">
     <input type="text" id="searchInput" class="search-bar" placeholder="What would you like to search today?" onkeydown="keySearch(event)">
@@ -36,9 +42,18 @@
     </button>
   </div>
 
-  <button onclick = "rerunSearch()" type="button" class="rocchio-button" id = "rocchio">
-    Rerun for better results!
-  </button>
+  <div class = "filter-rocchio-button">
+    <button onclick = "openFilter()" type="button" class="filter-button" id = "filter">
+      Filter
+    </button>
+
+    <button onclick = "rerunSearch()" type="button" class="rocchio-button" id = "rocchio">
+      Rerun for better results
+    </button>
+  </div>
+
+  <div class = "filter-aspects" id = "filterAspects">
+  </div>
   
   <!-- Results -->
   <div id="resultsContainer" class="results-container">
@@ -46,6 +61,7 @@
   </div>
 
   <script src="{{ url_for('static', filename='searchbar.js') }}"></script>
+
 
 </body>
 

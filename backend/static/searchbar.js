@@ -23,6 +23,14 @@ function display_results_container() {
   results_container.style.display = "block";
 }
 
+// Event for when user clicks the filter button
+function openFilter(){
+  var filterButton = document.getElementById('filter');
+  filterButton.style.backgroundColor =  '#ffffff';
+  filterButton.style.borderColor = '#bac9eb';
+  filterButton.style.color = '#000000';
+}
+
 // Defining lists for Rocchio's globally
 var relList = [];
 var irrelList = [];
@@ -56,7 +64,7 @@ function rerunSearch(){
   xhr2.onreadystatechange = function () {
     if (xhr2.readyState == 4 && xhr2.status == 200) {
       var results = JSON.parse(xhr2.responseText);
-      displayResults(results);
+      display(results);
     }
   };
   xhr2.send(JSON.stringify({
@@ -71,38 +79,63 @@ function rerunSearch(){
 
 // Updates relevant and irrelevant lists if user click's a thumbs up/down
 function relevance(type, index){
+  var indexListIrrel = irrelList.indexOf(index);
+  var indexListRel = relList.indexOf(index);
   if (type == 'up'){
     var indexListIrrel = irrelList.indexOf(index);
     if (indexListIrrel !== -1) {
       irrelList.splice(indexListIrrel, 1);
     }
-    relList.push(index);
-  } else if (type == 'down'){
-    var indexListRel = relList.indexOf(index);
     if (indexListRel !== -1) {
       relList.splice(indexListRel, 1);
     }
-  irrelList.push(index)
+    else{
+    relList.push(index);
+    }
+  } else if (type == 'down'){
+    if (indexListRel !== -1) {
+      relList.splice(indexListRel, 1);
+    }
+    if (indexListIrrel !== -1) {
+      irrelList.splice(indexListIrrel, 1);
+    }
+    else{
+    irrelList.push(index)
+    }
   }
   // window.alert(relList);
   // window.alert(irrelList);
   if (relList.length > 0 && irrelList.length > 0){
     var rocchioButton = document.getElementById('rocchio');
-    rocchioButton.style.backgroundColor = '#5171ba';
+    rocchioButton.style.backgroundColor = '#6b95f4';
+    rocchioButton.style.color = "#ffffff";
   }
 }
 
 // Changes the color of the thumb if it is clicked
 function changeColor(type, index){
+  var indexListIrrel = irrelList.indexOf(index);
+  var indexListRel = relList.indexOf(index);
+
   var upButton = document.getElementById('thumbs-up-' + index);
   var downButton = document.getElementById('thumbs-down-' + index);
   if (type == 'up'){
-    upButton.style.color = '#5555FF';
-    downButton.style.color = '#6d6d6d';
+    if (indexListRel == -1){
+      upButton.style.color = '#6d6d6d';
+    }
+    else {
+      upButton.style.color = '#5555FF';
+      downButton.style.color = '#6d6d6d';
+    }
   }
   else if (type =='down'){
-    downButton.style.color = '#5555FF';
-    upButton.style.color = '#6d6d6d';
+    if (indexListIrrel == -1){
+      downButton.style.color = '#6d6d6d';
+    }
+    else {
+      downButton.style.color = '#5555FF';
+      upButton.style.color = '#6d6d6d';
+    }
   }
 }
 
