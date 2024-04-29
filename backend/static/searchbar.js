@@ -69,7 +69,9 @@ function search() {
       ey: maxYear,
       author: author
   }));
-}
+  }
+  var rocchioButton = document.getElementById('rocchio');
+  rocchioButton.classList.remove("filter-button");
 }
 
 // Runs Rocchio's if user has selected at least one relevant article and one irrelevant article
@@ -103,6 +105,8 @@ function rerunSearch(){
     relList = [];
     irrelList = [];
   }}
+  var rocchioButton = document.getElementById('rocchio');
+  rocchioButton.classList.remove("filter-button");
 }
 
 // Updates relevant and irrelevant lists if user click's a thumbs up/down
