@@ -230,6 +230,8 @@ def getTop5(query, sy, ey, author):
         print("THE SORTED RESULTS LENGTH" + sorted_array[a][3] + "\n")
         print ("SHAPE" + str(len(sorted_array[a])))
         print(results_array)
+    
+    print("Done search!")
     return results
 
 
@@ -269,11 +271,11 @@ def rocchio(words, relevant_indices, irrelevant_indices, sy, ey, author, ):
 
     Args:
         words (str): The query words, a string.
-        sy, ey (str): Start and end years for the query.
-        author (str): Author filter for the query.
         relevant_indices (list): Indices of relevant documents.
         irrelevant_indices (list): Indices of irrelevant documents.
         sorted_array (list): A list containing details of each document, including abstracts.
+        sy, ey (str): Start and end years for the query.
+        author (str): Author filter for the query.
 
     Returns:
         The search results based on the adjusted query from Rocchio algorithm.
@@ -285,8 +287,8 @@ def rocchio(words, relevant_indices, irrelevant_indices, sy, ey, author, ):
     #make sure to pass in filter info. Then, get word count vector for each abstract marked relevant/irrelevant and perform rocchios. Search should only be called once (also for efficiency)
     sorted_array = search(words, sy, ey, author)
     abstracts = [None] * 20
-    for a in range(10):
-        print(len(abstracts))
+    print(len(sorted_array))
+    for a in range(len(sorted_array)):
         abstracts[a] = (sorted_array[a][3]) ##THIS IS WHERE THE ABSTRACTs IS STORED
     print("ABSTRACT LENGTH" + str(len(abstracts)))
     #now these lists contain the raw, unprocesssed texts for each irrelevant and relevant abstract
@@ -321,4 +323,4 @@ def rocchio(words, relevant_indices, irrelevant_indices, sy, ey, author, ):
     new_query = ' '.join([word for word, count in zip(query_words, new_query_vector) if count > 0])
     print(new_query)
     # Perform the search with the new query
-    return search(new_query, sy, ey, author)
+    return getTop5(new_query, sy, ey, author)
