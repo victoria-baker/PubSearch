@@ -31,6 +31,8 @@ app = Flask(__name__)
 # if __name__ == '__main__':
 #     app.run(debug=True)
 
+results_array = []
+
 Entrez.email = "vb272@cornell.edu"
 
 def process_article(article, corpus, articleMap):
@@ -148,6 +150,7 @@ def search(words, sy, ey, author):
         ctr+=1
 
     sorted_array = sorted(sorter)
+    results_array = sorted_array
     return sorted_array
 
     # results = []
@@ -222,12 +225,14 @@ def getTop5(query, sy, ey, author):
                 + citations
             )
         )
-        print(sorted_array[a][1] + "@" + sorted_array[a][2] +"\n")
+       # print(sorted_array[a][1] + "@" + sorted_array[a][2] +"\n")
+        print("THE SORTED RESULTS LENGTH" + sorted_array[a][3] + "\n")
+        print ("SHAPE" + str(len(sorted_array)))
     return results
 
 
 
-def rocchio(words, relevant_indices, irrelevant_indices):
+def rocchio(words, relevant_indices, irrelevant_indices, sy, ey, author):
     """
     This function implements the Rocchio algorithm for relevance feedback.
 
@@ -242,10 +247,15 @@ def rocchio(words, relevant_indices, irrelevant_indices):
     # Create a CountVectorizer object to get the term vectors
     count_vect = CountVectorizer()
     # Get the abstract for each relevant and irrelevant document
-    sorted_array = search(words)
-    abstracts = []
-    for a in range(min(len(sorted_array),5)):
-        abstracts.append(sorted_array[a][3]) ##THIS IS WHERE THE ABSTRACT IS STORED
+
+    # issue: if filters are changed, this returns completely diff results. Store sorted array as a global variable that gets updated during search so that
+    # it is called only once initially. ex. sorted array = [] at the top, and then sorted array = results before the return at the end of search
+    #make sure to pass in filter info. Then, get word count vector for each abstract marked relevant/irrelevant and perform rocchios. Search should only be called once (also for efficiency)
+    sorted_array = results_array
+    abstracts = [None] * 20
+    for a in range(20):
+        print(len(abstracts))
+        abstracts[a] = (sorted_array[a][3]) ##THIS IS WHERE THE ABSTRACT IS STORED
 
     relevant_abstracts = [abstracts[i] for i in relevant_indices]
     irrelevant_abstracts = [abstracts[i] for i in irrelevant_indices]
@@ -272,6 +282,6 @@ def rocchio(words, relevant_indices, irrelevant_indices):
     new_query = ' '.join([word for word, count in zip(count_vect.get_feature_names(), new_query_vector) if count > 0])
 
     # Perform the search with the new query
-    results = search(new_query)
+    results = search(new_query, sy, ey, author)
 
     return results
