@@ -91,7 +91,7 @@ function rerunSearch(){
       xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
           var results = JSON.parse(xhr.responseText);
-          display(results);
+          displayResults(results);
         }
       };
       xhr.send(JSON.stringify({
