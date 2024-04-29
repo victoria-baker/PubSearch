@@ -285,9 +285,10 @@ def rocchio(words, relevant_indices, irrelevant_indices, sy, ey, author, ):
     #make sure to pass in filter info. Then, get word count vector for each abstract marked relevant/irrelevant and perform rocchios. Search should only be called once (also for efficiency)
     sorted_array = search(words, sy, ey, author)
     abstracts = [None] * 20
-    for a in range(20):
+    for a in range(10):
         print(len(abstracts))
         abstracts[a] = (sorted_array[a][3]) ##THIS IS WHERE THE ABSTRACTs IS STORED
+    print("ABSTRACT LENGTH" + str(len(abstracts)))
     #now these lists contain the raw, unprocesssed texts for each irrelevant and relevant abstract
     relevant_abstracts = [abstracts[i] for i in relevant_indices]
     irrelevant_abstracts = [abstracts[i] for i in irrelevant_indices]
