@@ -32,8 +32,6 @@ app = Flask(__name__)
 # if __name__ == '__main__':
 #     app.run(debug=True)
 
-results_array = []
-
 Entrez.email = "vb272@cornell.edu"
 
 def process_article(article, corpus, articleMap):
@@ -151,45 +149,7 @@ def search(words, sy, ey, author):
         ctr+=1
 
     sorted_array = sorted(sorter)
-    results_array = sorted_array
     return sorted_array
-
-    # results = []
-    # for a in range(min(len(sorted_array), 10)):
-    #     abstract_lines = sorted_array[a][3].split(".")
-    #     abstract_final = ""
-    #     for i in range(min(10, len(abstract_lines))):
-    #         abstract_final += abstract_lines[i]
-
-    #     citation_query = Entrez.read(
-    #     Entrez.elink(
-    #         dbfrom="pubmed",
-    #         db="pmc",
-    #         LinkName="pubmed_pubmed_citedin",
-    #         from_uid=sorted_array[a][4],
-    #         )
-    #     )
-    #     if citation_query and citation_query[0]["LinkSetDb"]:
-    #         citations = str(len(citation_query[0]["LinkSetDb"][0]["Link"]))
-    #     else:
-    #         citations = "0"
-
-    #     results.append(
-    #         (
-    #             sorted_array[a][1]
-    #             + "@"
-    #             + sorted_array[a][2]
-    #             + "@"
-    #             + abstract_final
-    #             + "@"
-    #             + citations
-    #         )
-    #     )
-    #     print(sorted_array[a][1] + "@" + sorted_array[a][2] +"\n")
-    # return results
-
-# if __name__ == "__main__":
-#     search("mental health and artificial intelligence")
 
 
 ##helper to return the top 5 results
@@ -229,7 +189,6 @@ def getTop5(query, sy, ey, author):
        # print(sorted_array[a][1] + "@" + sorted_array[a][2] +"\n")
         print("THE SORTED RESULTS LENGTH" + sorted_array[a][3] + "\n")
         print ("SHAPE" + str(len(sorted_array[a])))
-        print(results_array)
     
     print("Done search!")
     return results
@@ -301,8 +260,8 @@ def rocchio(words, relevant_indices, irrelevant_indices, sy, ey, author, ):
 
     # Parameters for Rocchio algorithm
     alpha = 1.0
-    beta = 0.75
-    gamma = 0.15
+    beta = 1.0
+    gamma = 0.8
 
     # Create the initial query vector from the original query words
     query_vector = create_count_vector(words, words)
