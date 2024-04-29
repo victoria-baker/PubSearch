@@ -14,6 +14,7 @@ import time
 import concurrent.futures
 import threading
 from collections import OrderedDict
+import re
 
 
 app = Flask(__name__)
@@ -227,61 +228,94 @@ def getTop5(query, sy, ey, author):
         )
        # print(sorted_array[a][1] + "@" + sorted_array[a][2] +"\n")
         print("THE SORTED RESULTS LENGTH" + sorted_array[a][3] + "\n")
-        print ("SHAPE" + str(len(sorted_array)))
+        print ("SHAPE" + str(len(sorted_array[a])))
+        print(results_array)
     return results
 
 
 
-def rocchio(words, relevant_indices, irrelevant_indices, sy, ey, author):
+
+def preprocess_text(text):
+    # Convert to lower case
+    text = text.lower()
+    # Remove special characters
+    text = re.sub(r'[^a-z0-9\s]', '', text)
+    return text
+
+def tokenize(text):
+    return text.split()
+
+def create_count_vector(query, text):
+    # Preprocess and tokenize both query and text
+    query_words = tokenize(preprocess_text(query))
+    text_words = tokenize(preprocess_text(text))
+
+    # Create a dictionary to count occurrences of each query word in the text
+    count_dict = dict.fromkeys(query_words, 0)
+    for word in text_words:
+        if word in count_dict:
+            count_dict[word] += 1
+
+    # Return counts in the order of words in the query
+    return [count_dict[word] for word in query_words]
+
+
+def rocchio(words, sy, ey, author, relevant_indices, irrelevant_indices):
+
     """
     This function implements the Rocchio algorithm for relevance feedback.
 
     Args:
-        words (str): The query words.
-        relevant_indices (list): The indices of relevant documents.
-        irrelevant_indices (list): The indices of irrelevant documents.
+        words (str): The query words, a string.
+        sy, ey (str): Start and end years for the query.
+        author (str): Author filter for the query.
+        relevant_indices (list): Indices of relevant documents.
+        irrelevant_indices (list): Indices of irrelevant documents.
+        sorted_array (list): A list containing details of each document, including abstracts.
 
     Returns:
-        list: The search results based on the Rocchio algorithm.
+        The search results based on the adjusted query from Rocchio algorithm.
     """
-    # Create a CountVectorizer object to get the term vectors
-    count_vect = CountVectorizer()
     # Get the abstract for each relevant and irrelevant document
 
     # issue: if filters are changed, this returns completely diff results. Store sorted array as a global variable that gets updated during search so that
     # it is called only once initially. ex. sorted array = [] at the top, and then sorted array = results before the return at the end of search
     #make sure to pass in filter info. Then, get word count vector for each abstract marked relevant/irrelevant and perform rocchios. Search should only be called once (also for efficiency)
-    sorted_array = results_array
+    sorted_array = search(words, sy, ey, author)
     abstracts = [None] * 20
     for a in range(20):
         print(len(abstracts))
         abstracts[a] = (sorted_array[a][3]) ##THIS IS WHERE THE ABSTRACT IS STORED
-
+    #now these lists contain the raw, unprocesssed texts for each irrelevant and relevant abstract
     relevant_abstracts = [abstracts[i] for i in relevant_indices]
     irrelevant_abstracts = [abstracts[i] for i in irrelevant_indices]
 
-	# Calculate term vectors based on the query
-    query_vector = count_vect.transform([words]).toarray()[0]
+    # Extract abstracts for relevance feedback
+    relevant_abstracts = [sorted_array[i][3] for i in relevant_indices]
+    irrelevant_abstracts = [sorted_array[i][3] for i in irrelevant_indices]
 
-	# Calculate term vectors for relevant and irrelevant documents
-    relevant_vectors = [count_vect.transform([abstract]).toarray()[0] for abstract in relevant_abstracts]
-    irrelevant_vectors = [count_vect.transform([abstract]).toarray()[0] for abstract in irrelevant_abstracts]
+    # Parameters for Rocchio algorithm
+    alpha = 1.0
+    beta = 0.75
+    gamma = 0.15
 
-    # Calculate the centroid of the relevant and irrelevant documents
-    relevant_centroid = np.mean(relevant_vectors, axis=0)
-    irrelevant_centroid = np.mean(irrelevant_vectors, axis=0)
+    # Create the initial query vector from the original query words
+    query_vector = create_count_vector(words, words)
 
-    # Calculate the new query vector based on the Rocchio algorithm
-    alpha = 1.0  # Weight for the original query vector
-    beta = 0.8  # Weight for the relevant centroid vector
-    gamma = 0.2  # Weight for the irrelevant centroid vector
+    # Create vectors for relevant and irrelevant documents
+    relevant_vectors = np.array([create_count_vector(words, abstract) for abstract in relevant_abstracts])
+    irrelevant_vectors = np.array([create_count_vector(words, abstract) for abstract in irrelevant_abstracts])
 
-    new_query_vector = alpha * query_vector + beta * relevant_centroid - gamma * irrelevant_centroid
+    # Calculate centroids for relevant and irrelevant vectors
+    relevant_centroid = np.mean(relevant_vectors, axis=0) if len(relevant_vectors) > 0 else np.zeros(len(query_vector))
+    irrelevant_centroid = np.mean(irrelevant_vectors, axis=0) if len(irrelevant_vectors) > 0 else np.zeros(len(query_vector))
+
+    # Apply Rocchio algorithm to adjust the query vector
+    new_query_vector = alpha * np.array(query_vector) + beta * relevant_centroid - gamma * irrelevant_centroid
 
     # Convert the new query vector back to a string query
-    new_query = ' '.join([word for word, count in zip(count_vect.get_feature_names(), new_query_vector) if count > 0])
+    query_words = tokenize(preprocess_text(words))
+    new_query = ' '.join([word for word, count in zip(query_words, new_query_vector) if count > 0])
 
     # Perform the search with the new query
-    results = search(new_query, sy, ey, author)
-
-    return results
+    return search(new_query, sy, ey, author)
