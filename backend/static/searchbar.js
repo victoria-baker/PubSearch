@@ -75,25 +75,34 @@ function search() {
 // Runs Rocchio's if user has selected at least one relevant article and one irrelevant article
 function rerunSearch(){
   if (relList.length > 0 && irrelList.length > 0){
-  display_searching();
   var searchTerm = document.getElementById('searchInput').value;
-  var xhr2 = new XMLHttpRequest();
-  xhr2.open('POST', '/send-lists', true);
-  xhr2.setRequestHeader('Content-Type', 'application/json');
-  xhr2.onreadystatechange = function () {
-    if (xhr2.readyState == 4 && xhr2.status == 200) {
-      var results = JSON.parse(xhr2.responseText);
-      display(results);
-    }
-  };
-  xhr2.send(JSON.stringify({
-    search_term: searchTerm,
-    rel_list: relList,
-    irrel_list: irrelList
-  }));
-  relList = [];
-  irrelList = [];
-}
+  var minYear = document.getElementById("minYear").value;
+  var maxYear = document.getElementById("maxYear").value;
+  var author = document.getElementById("authorName").value;
+  if (parseInt(minYear) > parseInt(maxYear)){
+    filterAlert.classList.remove("hidden")
+  } else{
+    display_searching();
+    var xhr2 = new XMLHttpRequest();
+    xhr2.open('POST', '/send-lists', true);
+    xhr2.setRequestHeader('Content-Type', 'application/json');
+    xhr2.onreadystatechange = function () {
+      if (xhr2.readyState == 4 && xhr2.status == 200) {
+        var results = JSON.parse(xhr2.responseText);
+        display(results);
+      }
+    };
+    xhr2.send(JSON.stringify({
+      search_term: searchTerm,
+      rel_list: relList,
+      irrel_list: irrelList,
+      sy: minYear,
+      ey: maxYear,
+      author: author
+    }));
+    relList = [];
+    irrelList = [];
+  }}
 }
 
 // Updates relevant and irrelevant lists if user click's a thumbs up/down
@@ -124,9 +133,11 @@ function relevance(type, index){
   }
   // window.alert(relList);
   // window.alert(irrelList);
+  var rocchioButton = document.getElementById('rocchio');
   if (relList.length > 0 && irrelList.length > 0){
-    var rocchioButton = document.getElementById('rocchio');
     rocchioButton.classList.add("filter-button");
+  } else{
+    rocchioButton.classList.remove("filter-button");
   }
 }
 

@@ -53,7 +53,10 @@ def receive_data_lists():
     search_term = data["search_term"]
     rel_list = data["rel_list"]
     irrel_list = data["irrel_list"]
-    results = rocchio(search_term, rel_list, irrel_list)
+    sy = data["sy"]
+    ey = data["ey"]
+    author = data["author"]
+    results = rocchio(search_term, rel_list, irrel_list, sy, ey, author)
     print("RESULTS", results)
     return results
 
