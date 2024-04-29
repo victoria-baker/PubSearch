@@ -26,9 +26,14 @@ function display_results_container() {
 // Event for when user clicks the filter button
 function openFilter(){
   var filterButton = document.getElementById('filter');
-  filterButton.style.backgroundColor =  '#ffffff';
-  filterButton.style.borderColor = '#bac9eb';
-  filterButton.style.color = '#000000';
+  var filterAspects = document.getElementById('filterAspects');
+  if (filterButton.classList.contains("active-button")){
+    filterButton.classList.remove("active-button");
+    filterAspects.classList.add("hidden")
+  } else{
+    filterButton.classList.add("active-button")
+    filterAspects.classList.remove("hidden")
+  }
 }
 
 // Defining lists for Rocchio's globally
@@ -107,8 +112,7 @@ function relevance(type, index){
   // window.alert(irrelList);
   if (relList.length > 0 && irrelList.length > 0){
     var rocchioButton = document.getElementById('rocchio');
-    rocchioButton.style.backgroundColor = '#6b95f4';
-    rocchioButton.style.color = "#ffffff";
+    rocchioButton.classList.add("filter-button");
   }
 }
 
@@ -212,3 +216,19 @@ function displayResults(data) {
 
 // Attach the search function to the window object so it's available globally
 window.search = search;
+
+// Get the range input element
+var slider = document.getElementById("price");
+
+// Get the text input element
+var sliderValue = document.getElementById("sliderValue");
+
+// Update the text input value when the slider value changes
+slider.addEventListener("input", function() {
+  sliderValue.value = slider.value;
+});
+
+// Update the slider value when the text input value changes
+sliderValue.addEventListener("input", function() {
+  slider.value = sliderValue.value;
+});
