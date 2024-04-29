@@ -240,6 +240,7 @@ def preprocess_text(text):
     text = text.lower()
     # Remove special characters
     text = re.sub(r'[^a-z0-9\s]', '', text)
+    print("done preprocessing!")
     return text
 
 def tokenize(text):
@@ -256,11 +257,12 @@ def create_count_vector(query, text):
         if word in count_dict:
             count_dict[word] += 1
 
+    print("done making vectors!")
     # Return counts in the order of words in the query
     return [count_dict[word] for word in query_words]
 
 
-def rocchio(words, sy, ey, author, relevant_indices, irrelevant_indices):
+def rocchio(words, relevant_indices, irrelevant_indices, sy, ey, author, ):
 
     """
     This function implements the Rocchio algorithm for relevance feedback.
@@ -285,7 +287,7 @@ def rocchio(words, sy, ey, author, relevant_indices, irrelevant_indices):
     abstracts = [None] * 20
     for a in range(20):
         print(len(abstracts))
-        abstracts[a] = (sorted_array[a][3]) ##THIS IS WHERE THE ABSTRACT IS STORED
+        abstracts[a] = (sorted_array[a][3]) ##THIS IS WHERE THE ABSTRACTs IS STORED
     #now these lists contain the raw, unprocesssed texts for each irrelevant and relevant abstract
     relevant_abstracts = [abstracts[i] for i in relevant_indices]
     irrelevant_abstracts = [abstracts[i] for i in irrelevant_indices]
@@ -316,6 +318,6 @@ def rocchio(words, sy, ey, author, relevant_indices, irrelevant_indices):
     # Convert the new query vector back to a string query
     query_words = tokenize(preprocess_text(words))
     new_query = ' '.join([word for word, count in zip(query_words, new_query_vector) if count > 0])
-
+    print(new_query)
     # Perform the search with the new query
     return search(new_query, sy, ey, author)
