@@ -56,25 +56,31 @@
     <div class = "filter-aspects">
       <div>
         <div class = "slider" id = "minRange">
-          <h4>Min. Year:  </h4>
+          <h4 class ="text">Min. Year:</h4>
           <input type="number" class="slider-input" min="1900" max="2024" value="1900" onchange="this.nextElementSibling.value = this.value">
-          <input type="range" class="slider" id="minYear" name="price" min="1900" max="2024" value="1900" onchange="this.previousElementSibling.value = this.value">
+          <input type="range" class="slider" id="minYear" name="year" min="1900" max="2024" value="1900" onchange="this.previousElementSibling.value = this.value">
         </div>
         <div class = "slider" id = "maxRange">
-          <h4>
+          <h4 class = "text">
             Max. Year:  
           </h4>
           <input type="number" class="slider-input" min="1900" max="2024" value="2024" onchange="this.nextElementSibling.value = this.value">
-          <input type="range" class="slider" id="maxYear" name="price" min="1900" max="2024" value="2024" onchange="this.previousElementSibling.value = this.value">
+          <input type="range" class="slider" id="maxYear" name="year" min="1900" max="2024" value="2024" onchange="this.previousElementSibling.value = this.value">
         </div>
       </div>
       <div class = "author-filter">
-        <h4>
+        <h4 class = "text">
           Author:
         </h4>
-        <input type="text" id="authorName" placeholder="Enter author name">
+        <input type="text" class = "author-input" id="authorName" placeholder="Enter author name">
       </div>
     </div>
+  </div>
+
+  <div class = "hidden" id = "filterAlert">
+    <h5 class = "text">
+      Minimum year must be less than maximum year.
+    </h5>
   </div>
   
   </div>

@@ -189,8 +189,8 @@ def search(words, sy, ey, author):
 
 
 ##helper to return the top 5 results
-def getTop5(query):
-    sorted_array = search(query)
+def getTop5(query, sy, ey, author):
+    sorted_array = search(query, sy, ey, author)
     results = []
     for a in range(min(len(sorted_array), 10)):
         abstract_lines = sorted_array[a][3].split(".")

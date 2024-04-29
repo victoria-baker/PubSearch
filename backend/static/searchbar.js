@@ -42,20 +42,34 @@ var irrelList = [];
 
 // Sends query to backend and retrives results of search
 function search() {
-  relList = [];
-  irrelList = [];
-  display_searching();
-  var searchTerm = document.getElementById('searchInput').value;
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', '/send-data', true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      var results = JSON.parse(xhr.responseText);
-      displayResults(results);
-    }
-  };
-  xhr.send(JSON.stringify({data: searchTerm}));
+  var filterAlert = document.getElementById('filterAlert');
+  filterAlert.classList.add("hidden")
+  var minYear = document.getElementById("minYear").value;
+  var maxYear = document.getElementById("maxYear").value;
+  var author = document.getElementById("authorName").value;
+  if (parseInt(minYear) > parseInt(maxYear)){
+    filterAlert.classList.remove("hidden")
+  } else{
+    relList = [];
+    irrelList = [];
+    display_searching();
+    var searchTerm = document.getElementById('searchInput').value;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/send-data', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        var results = JSON.parse(xhr.responseText);
+        displayResults(results);
+      }
+    };
+    xhr.send(JSON.stringify({
+      search_term: searchTerm,
+      sy: minYear,
+      ey: maxYear,
+      author: author
+  }));
+}
 }
 
 // Runs Rocchio's if user has selected at least one relevant article and one irrelevant article
@@ -152,7 +166,7 @@ function displayResults(data) {
   // Displays message if there are no results
   if (data.length === 0) {
     // Display a message indicating no results found
-    document.getElementById('results').innerHTML = '<p>No articles found. Please input another query.</p>';
+    document.getElementById('results').innerHTML = '<p>No articles found. Please input another query or adjust filter settings.</p>';
     display_finish();
     return;
   }
@@ -217,18 +231,12 @@ function displayResults(data) {
 // Attach the search function to the window object so it's available globally
 window.search = search;
 
-// Get the range input element
-var slider = document.getElementById("price");
-
-// Get the text input element
+// Slider logic
+var slider = document.getElementById("year");
 var sliderValue = document.getElementById("sliderValue");
-
-// Update the text input value when the slider value changes
 slider.addEventListener("input", function() {
   sliderValue.value = slider.value;
 });
-
-// Update the slider value when the text input value changes
 sliderValue.addEventListener("input", function() {
   slider.value = sliderValue.value;
 });

@@ -36,10 +36,13 @@ def home():
 @app.route("/send-data", methods=["POST"])
 def receive_data():
     data = request.get_json()
-    search_query = data["data"]
+    search_query = data["search_term"]
+    sy = data["sy"]
+    ey = data["ey"]
+    author = data["author"]
     print("STARTING")
     print(search_query)
-    results = return_top5(search_query)
+    results = return_top5(search_query, sy, ey, author)
     print("RESULTS", results)
     # Format results as needed before sending back to the client
     return results
