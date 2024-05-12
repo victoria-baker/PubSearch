@@ -21,6 +21,135 @@ app = Flask(__name__)
 
 
 Entrez.email = "vb272@cornell.edu"
+stop_words = {
+    "i",
+    "me",
+    "my",
+    "myself",
+    "we",
+    "our",
+    "ours",
+    "ourselves",
+    "you",
+    "your",
+    "yours",
+    "yourself",
+    "yourselves",
+    "he",
+    "him",
+    "his",
+    "himself",
+    "she",
+    "her",
+    "hers",
+    "herself",
+    "it",
+    "its",
+    "itself",
+    "they",
+    "them",
+    "their",
+    "theirs",
+    "themselves",
+    "what",
+    "which",
+    "who",
+    "whom",
+    "this",
+    "that",
+    "these",
+    "those",
+    "am",
+    "is",
+    "are",
+    "was",
+    "were",
+    "be",
+    "been",
+    "being",
+    "have",
+    "has",
+    "had",
+    "having",
+    "do",
+    "does",
+    "did",
+    "doing",
+    "a",
+    "an",
+    "the",
+    "and",
+    "but",
+    "if",
+    "or",
+    "because",
+    "as",
+    "until",
+    "while",
+    "of",
+    "at",
+    "by",
+    "for",
+    "with",
+    "about",
+    "against",
+    "between",
+    "into",
+    "through",
+    "during",
+    "before",
+    "after",
+    "above",
+    "below",
+    "to",
+    "from",
+    "up",
+    "down",
+    "in",
+    "out",
+    "on",
+    "off",
+    "over",
+    "under",
+    "again",
+    "further",
+    "then",
+    "once",
+    "here",
+    "there",
+    "when",
+    "where",
+    "why",
+    "how",
+    "all",
+    "any",
+    "both",
+    "each",
+    "few",
+    "more",
+    "most",
+    "other",
+    "some",
+    "such",
+    "no",
+    "nor",
+    "not",
+    "only",
+    "own",
+    "same",
+    "so",
+    "than",
+    "too",
+    "very",
+    "s",
+    "t",
+    "can",
+    "will",
+    "just",
+    "don",
+    "should",
+    "now",
+}
 
 
 def process_article(article, corpus, articleMap):
@@ -69,14 +198,6 @@ def process_articles_multithread(df, corpus, articleMap):
 
 
 def search(words, sy, ey, author):
-    print("THE WORDS ARE")
-    print(words)
-    print("THE START YEAR IS")
-    print(sy)
-    print("THE END YEAR IS")
-    print(ey)
-    print("THE AUTHOR IS")
-    print(author)
     start = time.perf_counter()
     count_vect = CountVectorizer()
 
@@ -91,7 +212,6 @@ def search(words, sy, ey, author):
         sy = "1900"
     if ey == "2024":
         ey = "3000"
-        print("I'VE BEEN TO THE YEAR 3000")
     sy = int(sy)
     ey = int(ey)
 
@@ -166,55 +286,42 @@ def search(words, sy, ey, author):
     return sorted_array
 
 
+def highlight_words(text, query):
+    query_words = set(preprocess_text(query).split())
+
+    highlighted_text = " ".join(
+        [
+            "**" + word + "**" if word.lower() in query_words else word
+            for word in text.split()
+        ]
+    )
+    return highlighted_text
+
+
+def get_context_lines(lines, best_idx, num_lines=3):
+    start = max(0, best_idx - num_lines)
+    end = min(len(lines), best_idx + num_lines + 1)
+    return lines[start:end]
+
+
 ##helper to return the top 5 results
 def getTop5(query, sy, ey, author):
 
     sorted_array = search(query, sy, ey, author)
     results = []
     for a in range(min(len(sorted_array), 5)):
-        abstract_lines = sorted_array[a][3].split(".")
-        abstract_lines.insert(0, query)
+        abstract = sorted_array[a][3]
+        abstract_lines = abstract.split(". ")
+        vectorizer = CountVectorizer().fit([query] + abstract_lines)
+        query_vec = vectorizer.transform([query])
+        line_vecs = vectorizer.transform(abstract_lines)
 
-        abstract_final = ""
+        similarities = cosine_similarity(query_vec, line_vecs).flatten()
+        best_idx = np.argmax(similarities)
+        best_line = abstract_lines[best_idx]
+        context_lines = get_context_lines(abstract_lines, best_idx, 3)
 
-        count_vect = CountVectorizer()
-        X_train_counts = count_vect.fit_transform(abstract_lines)
-        # query_train_counts = count_vect.fit_transform(query)
-
-        sims = []
-        for i in range(1, len(abstract_lines)):
-            sims.append(
-                jaccard_score(
-                    X_train_counts[0].toarray()[0],
-                    # query_svd,
-                    X_train_counts[i].toarray()[0],
-                    average="macro",
-                )
-            )
-
-        sorter = []
-        ctr = 0
-
-        for i in range(len(abstract_lines) - 1):
-            sorter.append((sims[ctr], abstract_lines[ctr + 1]))
-            ctr += 1
-
-        abs_sort = sorted(sorter, reverse=True)
-
-        ctr = 0
-        for i in abs_sort:
-            if ctr > 5:
-                break
-
-            abstract_final += i[1]
-            ctr += 1
-
-        print(abstract_final)
-        """print()
-		print(sorted_array[a][3])"""
-
-        """for i in range(min(10, len(abstract_lines))):
-			abstract_final += abstract_lines[i]"""
+        highlighted_context = highlight_words(" ".join(context_lines), query)
 
         citation_query = Entrez.read(
             Entrez.elink(
@@ -235,7 +342,7 @@ def getTop5(query, sy, ey, author):
                 + "@"
                 + sorted_array[a][2]
                 + "@"
-                + abstract_final
+                + highlighted_context
                 + "@"
                 + citations
             )
@@ -251,7 +358,7 @@ def preprocess_text(text):
     text = text.lower()
     # Remove special characters
     text = re.sub(r"[^a-z0-9\s]", "", text)
-    print("done preprocessing!")
+    text = " ".join([word for word in text.split() if word not in stop_words])
     return text
 
 
