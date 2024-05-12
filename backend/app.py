@@ -8,6 +8,7 @@ from cosinesim import search as cosine_search
 from jaccardsim import search as jaccard_search
 from jaccardsim import getTop5 as return_top5
 from jaccardsim import rocchio
+
 # ROOT_PATH for linking with all your files.
 # Feel free to use a config.py or settings.py with a global export variable
 os.environ["ROOT_PATH"] = os.path.abspath(os.path.join("..", os.curdir))
@@ -40,12 +41,10 @@ def receive_data():
     sy = data["sy"]
     ey = data["ey"]
     author = data["author"]
-    print("STARTING")
-    print(search_query)
     results = return_top5(search_query, sy, ey, author)
-    print("RESULTS", results)
     # Format results as needed before sending back to the client
     return results
+
 
 @app.route("/send-lists", methods=["POST"])
 def receive_data_lists():
@@ -59,6 +58,7 @@ def receive_data_lists():
     results = rocchio(search_term, rel_list, irrel_list, sy, ey, author)
     print("RESULTS", results)
     return results
+
 
 if "DB_NAME" not in os.environ:
     app.run(debug=True, host="0.0.0.0", port=5000)
