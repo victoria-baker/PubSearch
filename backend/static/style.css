@@ -247,3 +247,7 @@ body {
   border: 1px solid #ccc;
   outline: none;
 }
+
+.highlight {
+  font-weight: bold;
+}

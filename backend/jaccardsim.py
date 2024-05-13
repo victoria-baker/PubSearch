@@ -291,7 +291,7 @@ def highlight_words(text, query):
 
     highlighted_text = " ".join(
         [
-            "**" + word + "**" if word.lower() in query_words else word
+             word if word.lower() in query_words else word
             for word in text.split()
         ]
     )
@@ -323,6 +323,8 @@ def getTop5(query, sy, ey, author, irrelevant_titles):
         similarities = cosine_similarity(query_vec, line_vecs).flatten()
         best_idx = np.argmax(similarities)
         best_line = abstract_lines[best_idx]
+        abstract_lines[best_idx] = ("***" + best_line + "***")
+        print("best_line: \n" + best_line)
         context_lines = get_context_lines(abstract_lines, best_idx, 3)
 
         highlighted_context = highlight_words(" ".join(context_lines), query)

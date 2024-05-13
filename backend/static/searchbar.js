@@ -195,6 +195,8 @@ function displayResults(data) {
     var title = parts[0]; // publication title
     var linky = parts[1]; // publication link
     var abstract = parts[2]; // abstract
+    //split abstract by ***, then take the first part, bold second part, add third part. 
+    var abstractParts = abstract.split("***");
     var citations = parts[3]; // citations
 
     var titleElement = document.createElement('span');
@@ -206,7 +208,7 @@ function displayResults(data) {
     resultDiv.appendChild(titleElement); // Append the title element
 
     var abstractElement = document.createElement('p');
-    abstractElement.innerHTML = abstract;
+    abstractElement.innerHTML = abstractParts[0] + "<span class='highlight'>" + abstractParts[1] + "</span>" + abstractParts[2];
     resultDiv.appendChild(abstractElement); // Append the abstract
 
     var citationsElement = document.createElement('span');
