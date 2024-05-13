@@ -305,12 +305,16 @@ def get_context_lines(lines, best_idx, num_lines=3):
 
 
 ##helper to return the top 5 results
-def getTop5(query, sy, ey, author):
+def getTop5(query, sy, ey, author, irrelevant_titles):
 
     sorted_array = search(query, sy, ey, author)
+    new_sorted_array = []
+    for a in range(len(sorted_array)):
+        if sorted_array[a][1] not in irrelevant_titles:
+            new_sorted_array.append(sorted_array[a])
     results = []
-    for a in range(min(len(sorted_array), 5)):
-        abstract = sorted_array[a][3]
+    for a in range(min(len(new_sorted_array), 5)):
+        abstract = new_sorted_array[a][3]
         abstract_lines = abstract.split(". ")
         vectorizer = CountVectorizer().fit([query] + abstract_lines)
         query_vec = vectorizer.transform([query])
@@ -328,7 +332,7 @@ def getTop5(query, sy, ey, author):
                 dbfrom="pubmed",
                 db="pmc",
                 LinkName="pubmed_pubmed_citedin",
-                from_uid=sorted_array[a][4],
+                from_uid=new_sorted_array[a][4],
             )
         )
         if citation_query and citation_query[0]["LinkSetDb"]:
@@ -338,9 +342,9 @@ def getTop5(query, sy, ey, author):
 
         results.append(
             (
-                sorted_array[a][1]
+                new_sorted_array[a][1]
                 + "@"
-                + sorted_array[a][2]
+                + new_sorted_array[a][2]
                 + "@"
                 + highlighted_context
                 + "@"
@@ -423,6 +427,9 @@ def rocchio(
     relevant_abstracts = [sorted_array[i][3] for i in relevant_indices]
     irrelevant_abstracts = [sorted_array[i][3] for i in irrelevant_indices]
 
+    irrelevant_titles = [sorted_array[i][1] for i in irrelevant_indices]
+    print(irrelevant_titles)
+
     # Parameters for Rocchio algorithm
     alpha = 1.0
     beta = 1.0
@@ -465,7 +472,7 @@ def rocchio(
     )
     print(new_query)
     # Perform the search with the new query
-    return getTop5(new_query, sy, ey, author)
+    return getTop5(new_query, sy, ey, author, irrelevant_titles)
 
 
 """if __name__ == "__main__":
