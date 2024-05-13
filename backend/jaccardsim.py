@@ -323,7 +323,9 @@ def getTop5(query, sy, ey, author, irrelevant_titles):
         similarities = cosine_similarity(query_vec, line_vecs).flatten()
         best_idx = np.argmax(similarities)
         best_line = abstract_lines[best_idx]
-        abstract_lines[best_idx] = ("***" + best_line + "***")
+        for i in range(len(abstract_lines)):
+            abstract_lines[i] = (abstract_lines[i] + ".")
+        abstract_lines[best_idx] = ("***" + best_line + "***.")
         print("best_line: \n" + best_line)
         context_lines = get_context_lines(abstract_lines, best_idx, 3)
 
